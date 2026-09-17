@@ -3,220 +3,259 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>Rail Rush 3D</title>
+<title>Rail Runner 3D - Swipe Run</title>
 
 <style>
 *{
- box-sizing:border-box;
- margin:0;
- padding:0;
- -webkit-tap-highlight-color:transparent;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
- width:100%;
- height:100%;
- overflow:hidden;
- background:#071326;
- font-family:Arial,Helvetica,sans-serif;
- touch-action:none;
- user-select:none;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#71c9ff;
+  font-family:Arial,Helvetica,sans-serif;
+  touch-action:none;
+  user-select:none;
 }
 
 #game{
- position:fixed;
- inset:0;
- overflow:hidden;
+  position:fixed;
+  inset:0;
+  overflow:hidden;
 }
 
 canvas{
- display:block;
- width:100%;
- height:100%;
+  width:100%;
+  height:100%;
+  display:block;
 }
 
+/* ================= HUD ================= */
+
 #hud{
- position:absolute;
- top:14px;
- left:14px;
- right:14px;
- z-index:10;
- display:flex;
- justify-content:space-between;
- align-items:flex-start;
- pointer-events:none;
+  position:absolute;
+  top:12px;
+  left:12px;
+  right:12px;
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  pointer-events:none;
 }
 
 .hudLeft{
- display:flex;
- flex-direction:column;
- gap:5px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
 .hudBox{
- background:rgba(7,18,39,.78);
- border:2px solid rgba(255,255,255,.22);
- border-radius:15px;
- padding:8px 13px;
- color:#fff;
- font-weight:900;
- backdrop-filter:blur(8px);
- box-shadow:0 5px 20px rgba(0,0,0,.25);
+  padding:7px 13px;
+  border-radius:14px;
+  color:#fff;
+  background:rgba(5,20,42,.78);
+  border:2px solid rgba(255,255,255,.22);
+  box-shadow:0 5px 20px rgba(0,0,0,.25);
+  backdrop-filter:blur(8px);
+  font-weight:900;
 }
 
 .score{
- font-size:20px;
+  font-size:20px;
 }
 
 .coins{
- color:#ffd42b;
- font-size:17px;
+  color:#ffd629;
+  font-size:17px;
 }
 
 #pause{
- pointer-events:auto;
- width:50px;
- height:50px;
- border:0;
- border-radius:15px;
- background:rgba(255,255,255,.9);
- color:#16233b;
- font-size:22px;
- font-weight:1000;
- box-shadow:0 5px 18px rgba(0,0,0,.3);
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:14px;
+  background:rgba(255,255,255,.94);
+  color:#15243c;
+  font-size:21px;
+  font-weight:1000;
+  pointer-events:auto;
+  box-shadow:0 6px 18px rgba(0,0,0,.2);
 }
 
+/* ================= POWER BAR ================= */
+
 #powerBar{
- position:absolute;
- left:50%;
- bottom:20px;
- transform:translateX(-50%);
- z-index:10;
- display:flex;
- gap:7px;
- flex-wrap:wrap;
- justify-content:center;
- pointer-events:none;
+  position:absolute;
+  left:50%;
+  bottom:17px;
+  transform:translateX(-50%);
+  z-index:20;
+  display:flex;
+  gap:5px;
+  justify-content:center;
+  flex-wrap:wrap;
+  max-width:95%;
+  pointer-events:none;
 }
 
 .power{
- display:none;
- padding:7px 12px;
- border-radius:18px;
- background:rgba(5,18,40,.86);
- border:2px solid rgba(255,255,255,.18);
- color:#fff;
- font-size:13px;
- font-weight:900;
- box-shadow:0 5px 20px rgba(0,0,0,.25);
+  display:none;
+  padding:7px 11px;
+  border-radius:20px;
+  color:#fff;
+  background:rgba(4,18,40,.9);
+  border:2px solid rgba(255,255,255,.2);
+  font-size:11px;
+  font-weight:1000;
+  box-shadow:0 4px 15px rgba(0,0,0,.25);
 }
+
+/* ================= MESSAGE ================= */
 
 #message{
- position:absolute;
- top:43%;
- left:50%;
- transform:translate(-50%,-50%);
- z-index:20;
- display:none;
- color:#fff;
- font-size:38px;
- font-weight:1000;
- text-align:center;
- text-shadow:0 4px 15px #000;
- pointer-events:none;
- white-space:nowrap;
+  position:absolute;
+  left:50%;
+  top:42%;
+  transform:translate(-50%,-50%);
+  z-index:30;
+  display:none;
+  color:#fff;
+  font-size:38px;
+  font-weight:1000;
+  text-align:center;
+  white-space:nowrap;
+  text-shadow:
+    0 4px 0 rgba(0,0,0,.35),
+    0 8px 25px #000;
+  pointer-events:none;
 }
 
+/* ================= OVERLAYS ================= */
+
 .overlay{
- position:absolute;
- inset:0;
- z-index:30;
- display:flex;
- justify-content:center;
- align-items:center;
- text-align:center;
- background:
- radial-gradient(circle at 50% 20%,rgba(40,140,255,.25),transparent 40%),
- linear-gradient(180deg,#091c3d,#050d1c);
+  position:absolute;
+  inset:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(41,146,255,.3),
+      transparent 38%
+    ),
+    linear-gradient(
+      180deg,
+      #08234a,
+      #050c19
+    );
 }
 
 .panel{
- width:min(92%,400px);
- padding:28px 22px;
- border-radius:25px;
- background:rgba(8,23,49,.94);
- border:2px solid rgba(255,255,255,.14);
- box-shadow:0 20px 60px rgba(0,0,0,.45);
- color:#fff;
+  width:min(92%,420px);
+  padding:28px 22px;
+  border-radius:27px;
+  background:rgba(6,22,47,.95);
+  border:2px solid rgba(255,255,255,.15);
+  box-shadow:0 25px 80px rgba(0,0,0,.55);
 }
 
 .logo{
- font-size:42px;
- font-weight:1000;
- color:#ffd52d;
- letter-spacing:-2px;
- text-shadow:
- 0 4px 0 #dc7100,
- 0 7px 15px rgba(0,0,0,.5);
+  color:#ffd52b;
+  font-size:40px;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:-2px;
+  text-shadow:
+    0 4px 0 #d86e00,
+    0 8px 20px rgba(0,0,0,.6);
 }
 
 .subtitle{
- margin-top:10px;
- color:#c9d8ed;
- line-height:1.5;
+  margin-top:12px;
+  color:#cbd8ec;
+  font-size:14px;
+  line-height:1.5;
 }
 
 .startBtn{
- margin-top:22px;
- width:100%;
- min-height:55px;
- border:0;
- border-radius:17px;
- background:linear-gradient(135deg,#ffd027,#ff7600);
- color:#281600;
- font-size:19px;
- font-weight:1000;
- box-shadow:0 8px 25px rgba(255,130,0,.35);
+  width:100%;
+  min-height:56px;
+  margin-top:22px;
+  border:0;
+  border-radius:17px;
+  background:linear-gradient(
+    135deg,
+    #ffd72d,
+    #ff7200
+  );
+  color:#281600;
+  font-size:19px;
+  font-weight:1000;
+  box-shadow:0 8px 28px rgba(255,120,0,.38);
 }
 
-.controls{
- margin-top:17px;
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:8px;
+.swipeInfo{
+  margin-top:17px;
+  padding:12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.06);
+  color:#dbe6f6;
+  font-size:13px;
+  line-height:1.65;
 }
 
-.control{
- padding:10px;
- border-radius:12px;
- background:rgba(255,255,255,.07);
- color:#d5e1f2;
- font-size:13px;
-}
-
-#gameOver{
- display:none;
+.swipeInfo b{
+  color:#ffd62a;
 }
 
 .finalScore{
- margin-top:14px;
- font-size:22px;
- font-weight:900;
+  margin-top:13px;
+  color:#fff;
+  font-size:21px;
+  font-weight:1000;
+}
+
+#gameOver{
+  display:none;
+}
+
+#pauseScreen{
+  display:none;
+}
+
+.pauseText{
+  color:#fff;
+  font-size:36px;
+  font-weight:1000;
 }
 
 #loading{
- position:absolute;
- inset:0;
- z-index:100;
- display:flex;
- align-items:center;
- justify-content:center;
- background:#071326;
- color:#fff;
- font-size:20px;
- font-weight:900;
+  position:absolute;
+  inset:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#061326;
+  color:#fff;
+  font-size:19px;
+  font-weight:1000;
+}
+
+/* no movement control buttons */
+.controlButtons{
+  display:none !important;
 }
 </style>
 </head>
@@ -225,104 +264,129 @@ canvas{
 
 <div id="game">
 
-<div id="loading">Loading 3D World...</div>
-
-<div id="hud">
- <div class="hudLeft">
-  <div class="hudBox score">
-   SCORE <span id="score">0</span>
+  <div id="loading">
+    Loading 3D World...
   </div>
 
-  <div class="hudBox coins">
-   🪙 <span id="coinCount">0</span>
-  </div>
- </div>
+  <div id="hud">
 
- <button id="pause">Ⅱ</button>
-</div>
+    <div class="hudLeft">
 
-<div id="powerBar">
+      <div class="hudBox score">
+        SCORE <span id="score">0</span>
+      </div>
 
- <div class="power" id="magnetPower">
-  🧲 MAGNET <span id="magnetTime"></span>
- </div>
+      <div class="hudBox coins">
+        🪙 <span id="coinCount">0</span>
+      </div>
 
- <div class="power" id="boardPower">
-  🛹 SKATEBOARD <span id="boardTime"></span>
- </div>
+    </div>
 
- <div class="power" id="heliPower">
-  🚁 HELICOPTER <span id="heliTime"></span>
- </div>
-
-</div>
-
-<div id="message"></div>
-
-<div id="startScreen" class="overlay">
-
- <div class="panel">
-
-  <div class="logo">RAIL RUSH</div>
-
-  <div class="subtitle">
-   3D railway endless runner.<br>
-   Swipe like a mobile runner game.
-  </div>
-
-  <button class="startBtn" id="startBtn">
-   ▶ START RUN
-  </button>
-
-  <div class="controls">
-
-   <div class="control">
-    👈👉<br>
-    Swipe Left / Right
-   </div>
-
-   <div class="control">
-    👆<br>
-    Swipe Up = Jump
-   </div>
-
-   <div class="control">
-    👇<br>
-    Swipe Down = Slide
-   </div>
-
-   <div class="control">
-    🪙<br>
-    Collect Coins
-   </div>
+    <button id="pause">Ⅱ</button>
 
   </div>
 
- </div>
+  <div id="powerBar">
 
-</div>
+    <div class="power" id="magnetPower">
+      🧲 MAGNET <span id="magnetTime"></span>
+    </div>
 
-<div id="gameOver" class="overlay">
+    <div class="power" id="sneakerPower">
+      👟 SNEAKERS <span id="sneakerTime"></span>
+    </div>
 
- <div class="panel">
+    <div class="power" id="boardPower">
+      🛹 HOVERBOARD <span id="boardTime"></span>
+    </div>
 
-  <div class="logo">GAME OVER</div>
+    <div class="power" id="jetPower">
+      🚀 JETPACK <span id="jetTime"></span>
+    </div>
 
-  <div class="finalScore">
-   Score: <span id="finalScore">0</span>
   </div>
 
-  <div class="finalScore">
-   🪙 Coins: <span id="finalCoins">0</span>
+  <div id="message"></div>
+
+  <!-- START -->
+
+  <div id="startScreen" class="overlay">
+
+    <div class="panel">
+
+      <div class="logo">
+        RAIL RUNNER
+      </div>
+
+      <div class="subtitle">
+        Run through the colorful 3D railway city.
+        Dodge trains, jump obstacles and collect coins.
+      </div>
+
+      <button class="startBtn" id="startBtn">
+        ▶ START RUN
+      </button>
+
+      <div class="swipeInfo">
+        <b>👈 Swipe Left</b> — Left Lane<br>
+        <b>👉 Swipe Right</b> — Right Lane<br>
+        <b>👆 Swipe Up</b> — Jump<br>
+        <b>👇 Swipe Down</b> — Roll / Slide
+      </div>
+
+    </div>
+
   </div>
 
-  <button class="startBtn" id="restartBtn">
-   🔄 RUN AGAIN
-  </button>
+  <!-- PAUSE -->
 
- </div>
+  <div id="pauseScreen" class="overlay">
 
-</div>
+    <div class="panel">
+
+      <div class="pauseText">
+        PAUSED
+      </div>
+
+      <div class="subtitle">
+        Swipe controls are ready when you continue.
+      </div>
+
+      <button class="startBtn" id="resumeBtn">
+        ▶ RESUME
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- GAME OVER -->
+
+  <div id="gameOver" class="overlay">
+
+    <div class="panel">
+
+      <div class="logo">
+        GAME OVER
+      </div>
+
+      <div class="finalScore">
+        SCORE:
+        <span id="finalScore">0</span>
+      </div>
+
+      <div class="finalScore">
+        🪙 COINS:
+        <span id="finalCoins">0</span>
+      </div>
+
+      <button class="startBtn" id="restartBtn">
+        🔄 RUN AGAIN
+      </button>
+
+    </div>
+
+  </div>
 
 </div>
 
@@ -333,87 +397,138 @@ import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 
-/* =====================================================
-   BASIC SETUP
-===================================================== */
+/* =========================================================
+   DOM
+========================================================= */
 
-const game=document.getElementById("game");
+const game =
+  document.getElementById("game");
 
-const scene=new THREE.Scene();
+const loading =
+  document.getElementById("loading");
 
-scene.background=new THREE.Color(0x70c8ff);
+const scoreEl =
+  document.getElementById("score");
 
-scene.fog=new THREE.Fog(
- 0x70c8ff,
- 38,
- 185
-);
+const coinEl =
+  document.getElementById("coinCount");
+
+const finalScoreEl =
+  document.getElementById("finalScore");
+
+const finalCoinsEl =
+  document.getElementById("finalCoins");
+
+const startScreen =
+  document.getElementById("startScreen");
+
+const gameOverScreen =
+  document.getElementById("gameOver");
+
+const pauseScreen =
+  document.getElementById("pauseScreen");
+
+const messageEl =
+  document.getElementById("message");
+
+const pauseBtn =
+  document.getElementById("pause");
+
+const startBtn =
+  document.getElementById("startBtn");
+
+const restartBtn =
+  document.getElementById("restartBtn");
+
+const resumeBtn =
+  document.getElementById("resumeBtn");
 
 
-const camera=new THREE.PerspectiveCamera(
-  67,
-  innerWidth/innerHeight,
-  .1,
-  500
-);
+/* =========================================================
+   THREE.JS
+========================================================= */
+
+const scene =
+  new THREE.Scene();
+
+scene.background =
+  new THREE.Color(0x73caff);
+
+scene.fog =
+  new THREE.Fog(
+    0x73caff,
+    35,
+    190
+  );
+
+
+const camera =
+  new THREE.PerspectiveCamera(
+    60,
+    innerWidth / innerHeight,
+    .1,
+    600
+  );
 
 camera.position.set(
   0,
-  5.8,
-  9
+  5.6,
+  10
 );
 
 
-const renderer=new THREE.WebGLRenderer({
- antialias:true,
- powerPreference:"high-performance"
-});
+const renderer =
+  new THREE.WebGLRenderer({
+    antialias:true,
+    powerPreference:"high-performance"
+  });
 
 renderer.setPixelRatio(
- Math.min(devicePixelRatio,1.7)
+  Math.min(devicePixelRatio,1.5)
 );
 
 renderer.setSize(
- innerWidth,
- innerHeight
+  innerWidth,
+  innerHeight
 );
 
 renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=
- THREE.PCFSoftShadowMap;
 
-renderer.outputColorSpace=
- THREE.SRGBColorSpace;
+renderer.shadowMap.type =
+  THREE.PCFSoftShadowMap;
+
+renderer.outputColorSpace =
+  THREE.SRGBColorSpace;
 
 game.appendChild(
- renderer.domElement
+  renderer.domElement
 );
 
 
-/* =====================================================
+/* =========================================================
    LIGHT
-===================================================== */
+========================================================= */
 
-const hemi=
- new THREE.HemisphereLight(
-  0xffffff,
-  0x40516d,
-  2.4
-);
+const hemi =
+  new THREE.HemisphereLight(
+    0xffffff,
+    0x456b3d,
+    2.2
+  );
 
 scene.add(hemi);
 
 
-const sun=
- new THREE.DirectionalLight(
-  0xffffff,
-  3
-);
+const sun =
+  new THREE.DirectionalLight(
+    0xffffff,
+    3
+  );
 
 sun.position.set(
- -25,
- 35,
- 15
+  -30,
+  45,
+  20
 );
 
 sun.castShadow=true;
@@ -421,521 +536,467 @@ sun.castShadow=true;
 sun.shadow.mapSize.width=1024;
 sun.shadow.mapSize.height=1024;
 
+sun.shadow.camera.left=-55;
+sun.shadow.camera.right=55;
+sun.shadow.camera.top=55;
+sun.shadow.camera.bottom=-55;
+
 scene.add(sun);
 
 
-/* =====================================================
-   MATERIAL
-===================================================== */
+/* =========================================================
+   HELPERS
+========================================================= */
 
-function mat(color,rough=.7){
+function mat(
+  color,
+  roughness=.75,
+  metalness=.05
+){
 
- return new THREE.MeshStandardMaterial({
-  color:color,
-  roughness:rough,
-  metalness:.12
- });
+  return new THREE.MeshStandardMaterial({
+    color,
+    roughness,
+    metalness
+  });
+
 }
 
 
-const railMat=
- mat(0x9aa5b2,.3);
+function box(
+  w,h,d,
+  material,
+  x=0,
+  y=0,
+  z=0
+){
 
-const sleeperMat=
- mat(0x543225);
+  const m =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        w,h,d
+      ),
+      material
+    );
 
-const groundMat=
- mat(0x4a4650);
+  m.position.set(
+    x,y,z
+  );
 
-const trainBodyMat=
- mat(0x793d61,.42);
+  m.castShadow=true;
+  m.receiveShadow=true;
 
-const trainRoofMat=
- mat(0x242b42,.4);
-
-const windowMat=
- new THREE.MeshStandardMaterial({
-  color:0x9eeeff,
-  roughness:.12,
-  metalness:.3
- });
+  return m;
+}
 
 
-/* =====================================================
+/* =========================================================
    WORLD
-===================================================== */
+========================================================= */
 
-const world=
- new THREE.Group();
+const world =
+  new THREE.Group();
 
 scene.add(world);
 
 
-const ground=
- new THREE.Mesh(
-  new THREE.BoxGeometry(
-   45,
-   1,
-   520
-  ),
-  groundMat
- );
-
-ground.position.set(
- 0,
- -.55,
- -180
-);
-
-ground.receiveShadow=true;
-
-world.add(ground);
-
-
-/* =====================================================
-   TRACKS
-===================================================== */
-
-const laneX=[
- -4,
- 0,
- 4
+const lanes=[
+  -2.5,
+  0,
+  2.5
 ];
 
 
-function createTrack(x){
+/* grass */
 
- const group=
-  new THREE.Group();
-
-
- /* sleepers */
-
- for(
-  let z=5;
-  z>-300;
-  z-=2.8
- ){
-
-  const sleeper=
-   new THREE.Mesh(
-    new THREE.BoxGeometry(
-     5.7,
-     .24,
-     .58
-    ),
-    sleeperMat
-   );
-
-  sleeper.position.set(
-   x,
-   0,
-   z
+const grass =
+  box(
+    75,
+    1,
+    1000,
+    mat(0x55a944),
+    0,
+    -.72,
+    -430
   );
 
-  sleeper.receiveShadow=true;
+grass.receiveShadow=true;
 
-  group.add(sleeper);
- }
+world.add(grass);
 
 
- /* rails */
+/* central dirt */
 
- [-1.25,1.25].forEach(
-  offset=>{
+const dirt =
+  box(
+    19,
+    .15,
+    1000,
+    mat(0x866140),
+    0,
+    -.18,
+    -430
+  );
 
-   const rail=
-    new THREE.Mesh(
-     new THREE.BoxGeometry(
-      .18,
-      .3,
-      620
-     ),
-     railMat
+world.add(dirt);
+
+
+/* =========================================================
+   TRACKS
+========================================================= */
+
+const railMaterial =
+  mat(0x8c939c,.35,.65);
+
+const sleeperMaterial =
+  mat(0x55382b);
+
+const trackBedMaterial =
+  mat(0x3b4148);
+
+
+lanes.forEach(x=>{
+
+  const bed =
+    box(
+      4.8,
+      .16,
+      1000,
+      trackBedMaterial,
+      x,
+      -.05,
+      -430
     );
 
-   rail.position.set(
-    x+offset,
-    .25,
-    -145
-   );
+  world.add(bed);
 
-   rail.castShadow=true;
 
-   group.add(rail);
+  for(
+    const off of [-1.05,1.05]
+  ){
+
+    const rail =
+      box(
+        .14,
+        .28,
+        1000,
+        railMaterial,
+        x+off,
+        .13,
+        -430
+      );
+
+    world.add(rail);
 
   }
- );
 
 
- /* center track line */
+  for(
+    let z=15;
+    z>-900;
+    z-=2.4
+  ){
 
- const center=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    .08,
-    .04,
-    620
-   ),
-   mat(0x25252b)
-  );
+    const sleeper =
+      box(
+        4.5,
+        .18,
+        .48,
+        sleeperMaterial,
+        x,
+        -.01,
+        z
+      );
 
- center.position.set(
-  x,
-  .04,
-  -145
- );
+    world.add(sleeper);
 
- group.add(center);
+  }
+
+});
 
 
- world.add(group);
+/* =========================================================
+   SIDE POSTS
+========================================================= */
+
+for(
+  let z=0;
+  z>-800;
+  z-=17
+){
+
+  const leftPole =
+    box(
+      .09,
+      1.5,
+      .09,
+      mat(0x28313c),
+      -5.6,
+      .72,
+      z
+    );
+
+  world.add(leftPole);
+
+
+  const rightPole =
+    box(
+      .09,
+      1.5,
+      .09,
+      mat(0x28313c),
+      5.6,
+      .72,
+      z-8
+    );
+
+  world.add(rightPole);
+
+
+  const signL =
+    box(
+      .5,
+      .3,
+      .08,
+      mat(0xffdf25),
+      -5.6,
+      1.45,
+      z
+    );
+
+  world.add(signL);
+
+
+  const signR =
+    box(
+      .5,
+      .3,
+      .08,
+      mat(0x36d8ff),
+      5.6,
+      1.45,
+      z-8
+    );
+
+  world.add(signR);
+
 }
 
 
-laneX.forEach(
- createTrack
-);
-
-
-/* =====================================================
-   PLATFORM
-===================================================== */
-
-function makePlatform(x){
-
- const platform=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    3,
-    1,
-    620
-   ),
-   mat(0x697181)
-  );
-
- platform.position.set(
-  x,
-  -.03,
-  -145
- );
-
- platform.receiveShadow=true;
-
- world.add(platform);
-
-
- const edge=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    .18,
-    .18,
-    620
-   ),
-   mat(0xf4c52d)
-  );
-
- edge.position.set(
-  x<0 ? x+1.42 : x-1.42,
-  .48,
-  -145
- );
-
- world.add(edge);
-}
-
-
-makePlatform(-7);
-makePlatform(7);
-
-
-/* =====================================================
-   BUILDINGS
-===================================================== */
+/* =========================================================
+   CITY BUILDINGS
+========================================================= */
 
 const buildingColors=[
- 0xb94e3a,
- 0x4381a8,
- 0xd28e39,
- 0x7252a1,
- 0x3c946e,
- 0xa55d7d
+  0xf15b47,
+  0x347fb9,
+  0xf2b82d,
+  0x8555b2,
+  0x3ea46b,
+  0xd96591
 ];
 
 
 function building(
- x,
- z,
- w,
- h,
- d,
- color
+  x,z,w,h,d,color
 ){
 
- const b=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    w,h,d
-   ),
-   mat(color)
-  );
-
- b.position.set(
-  x,
-  h/2,
-  z
- );
-
- b.castShadow=true;
- b.receiveShadow=true;
-
- world.add(b);
+  const g =
+    new THREE.Group();
 
 
- /* windows */
-
- for(
-  let y=2;
-  y<h-1;
-  y+=2.5
- ){
-
-  for(
-   let xx=-w/2+.7;
-   xx<w/2-.4;
-   xx+=1.5
-  ){
-
-   const win=
-    new THREE.Mesh(
-     new THREE.BoxGeometry(
-      .58,
-      .75,
-      .05
-     ),
-     new THREE.MeshStandardMaterial({
-      color:
-       Math.random()>.35
-       ?0xffe99c
-       :0x6ec5e8,
-      emissive:0x453800,
-      emissiveIntensity:.28
-     })
+  const body =
+    box(
+      w,h,d,
+      mat(color),
+      0,h/2,0
     );
 
-   win.position.set(
-    x+xx,
-    y,
-    z-d/2-.03
-   );
+  g.add(body);
 
-   world.add(win);
+
+  const roof =
+    box(
+      w+.15,
+      .25,
+      d+.15,
+      mat(0x242c39),
+      0,
+      h+.12,
+      0
+    );
+
+  g.add(roof);
+
+
+  const windowMat =
+    new THREE.MeshStandardMaterial({
+      color:0xffe89b,
+      emissive:0x5d4700,
+      emissiveIntensity:.35,
+      roughness:.4
+    });
+
+
+  for(
+    let yy=2;
+    yy<h-1;
+    yy+=2.5
+  ){
+
+    for(
+      let xx=-w/2+.7;
+      xx<w/2-.4;
+      xx+=1.3
+    ){
+
+      const win =
+        box(
+          .48,
+          .65,
+          .045,
+          windowMat,
+          xx,
+          yy,
+          d/2+.03
+        );
+
+      g.add(win);
+
+    }
+
   }
- }
+
+
+  g.position.set(
+    x,
+    0,
+    z
+  );
+
+  world.add(g);
+
 }
 
 
 for(
- let z=0;
- z>-300;
- z-=18
+  let z=0;
+  z>-800;
+  z-=18
 ){
 
- building(
-  -11,
-  z,
-  5,
-  9+Math.random()*8,
-  13,
-  buildingColors[
-   Math.floor(
-    Math.random()*buildingColors.length
-   )
-  ]
- );
+  building(
+    -10-Math.random()*2,
+    z,
+    5,
+    8+Math.random()*14,
+    11,
+    buildingColors[
+      Math.floor(
+        Math.random()*
+        buildingColors.length
+      )
+    ]
+  );
 
 
- building(
-  11,
-  z-7,
-  5,
-  10+Math.random()*9,
-  13,
-  buildingColors[
-   Math.floor(
-    Math.random()*buildingColors.length
-   )
-  ]
- );
+  building(
+    10+Math.random()*2,
+    z-8,
+    5,
+    9+Math.random()*15,
+    11,
+    buildingColors[
+      Math.floor(
+        Math.random()*
+        buildingColors.length
+      )
+    ]
+  );
+
 }
 
 
-/* =====================================================
-   STREET LIGHTS
-===================================================== */
-
-function streetLight(x,z){
-
- const pole=
-  new THREE.Mesh(
-   new THREE.CylinderGeometry(
-    .07,
-    .12,
-    4.6,
-    8
-   ),
-   mat(0x202633,.5)
-  );
-
- pole.position.set(
-  x,
-  2.3,
-  z
- );
-
- world.add(pole);
-
-
- const arm=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    1.1,
-    .08,
-    .08
-   ),
-   mat(0x202633)
-  );
-
- arm.position.set(
-  x+(x<0?.5:-.5),
-  4.45,
-  z
- );
-
- world.add(arm);
-
-
- const lamp=
-  new THREE.Mesh(
-   new THREE.SphereGeometry(
-    .23,
-    12,
-    8
-   ),
-   new THREE.MeshStandardMaterial({
-    color:0xffe9a0,
-    emissive:0xffa900,
-    emissiveIntensity:1.6
-   })
-  );
-
- lamp.position.set(
-  x+(x<0?1:-1),
-  4.42,
-  z
- );
-
- world.add(lamp);
-}
-
-
-for(
- let z=0;
- z>-280;
- z-=18
-){
-
- streetLight(-8,z);
- streetLight(8,z-8);
-}
-
-
-/* =====================================================
+/* =========================================================
    PLAYER
-===================================================== */
+========================================================= */
 
-const player=
- new THREE.Group();
-
-scene.add(player);
+const player =
+  new THREE.Group();
 
 player.position.set(
- 0,
- 0,
- 4
+  0,
+  0,
+  5
 );
 
-
-/* shadow */
-
-const playerShadow=
- new THREE.Mesh(
-  new THREE.CircleGeometry(
-   .72,
-   24
-  ),
-  new THREE.MeshBasicMaterial({
-   color:0x000000,
-   transparent:true,
-   opacity:.3
-  })
- );
-
-playerShadow.rotation.x=-Math.PI/2;
-playerShadow.position.y=.03;
-
-scene.add(playerShadow);
+scene.add(player);
 
 
 /* body */
 
-const body=
- new THREE.Mesh(
-  new THREE.BoxGeometry(
-   1.05,
-   1.35,
-   .7
-  ),
-  mat(0x2476d8)
- );
+const torso =
+  box(
+    .78,
+    1.05,
+    .52,
+    mat(0x208fe0),
+    0,
+    1.52,
+    0
+  );
 
-body.position.y=1.55;
-body.castShadow=true;
-
-player.add(body);
+player.add(torso);
 
 
-/* shirt */
+/* shirt detail */
 
-const shirt=
- new THREE.Mesh(
-  new THREE.BoxGeometry(
-   1.16,
-   .72,
-   .76
-  ),
-  mat(0x20b978)
- );
-
-shirt.position.y=1.85;
-shirt.castShadow=true;
+const shirt =
+  box(
+    .82,
+    .42,
+    .55,
+    mat(0x176fbe),
+    0,
+    1.82,
+    0
+  );
 
 player.add(shirt);
 
 
+/* neck */
+
+const neck =
+  new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .14,
+      .14,
+      .25,
+      10
+    ),
+    mat(0xe3a078)
+  );
+
+neck.position.y=2.13;
+
+player.add(neck);
+
+
 /* head */
 
-const head=
- new THREE.Mesh(
-  new THREE.SphereGeometry(
-   .55,
-   20,
-   16
-  ),
-  mat(0xf0b184)
- );
+const head =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .46,
+      16,
+      12
+    ),
+    mat(0xe4a078)
+  );
 
-head.position.y=2.67;
+head.position.y=2.54;
+
 head.castShadow=true;
 
 player.add(head);
@@ -943,2085 +1004,2840 @@ player.add(head);
 
 /* hair */
 
-const hair=
- new THREE.Mesh(
-  new THREE.SphereGeometry(
-   .58,
-   20,
-   12,
-   0,
-   Math.PI*2,
-   0,
-   Math.PI*.48
-  ),
-  mat(0x17151d)
- );
+const hair =
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .47,
+      16,
+      10
+    ),
+    mat(0x281914)
+  );
 
-hair.position.y=2.88;
+hair.scale.set(
+  1,
+  .62,
+  1
+);
+
+hair.position.set(
+  0,
+  2.72,
+  .03
+);
 
 player.add(hair);
 
 
-/* legs */
+/* cap */
 
-function createLeg(x){
-
- const g=
-  new THREE.Group();
-
- const leg=
+const cap =
   new THREE.Mesh(
-   new THREE.BoxGeometry(
-    .38,
-    1.1,
-    .42
-   ),
-   mat(0x242b42)
+    new THREE.SphereGeometry(
+      .49,
+      16,
+      8
+    ),
+    mat(0x155ed3)
   );
 
- leg.position.y=.55;
- leg.castShadow=true;
+cap.scale.set(
+  1,
+  .43,
+  1
+);
 
- g.add(leg);
+cap.position.set(
+  0,
+  2.87,
+  .02
+);
 
- g.position.x=x;
+player.add(cap);
 
- player.add(g);
 
- return g;
+const visor =
+  box(
+    .5,
+    .08,
+    .32,
+    mat(0x0a3c9d),
+    0,
+    2.82,
+    -.29
+  );
+
+visor.rotation.x=-.08;
+
+player.add(visor);
+
+
+/* =========================================================
+   PLAYER LEGS
+========================================================= */
+
+function makeLeg(){
+
+  const g =
+    new THREE.Group();
+
+
+  const upper =
+    box(
+      .28,
+      .6,
+      .3,
+      mat(0x23529e),
+      0,
+      .84,
+      0
+    );
+
+  g.add(upper);
+
+
+  const lower =
+    box(
+      .3,
+      .55,
+      .32,
+      mat(0x214989),
+      0,
+      .28,
+      0
+    );
+
+  g.add(lower);
+
+
+  return g;
+
 }
 
 
-const legL=createLeg(-.27);
-const legR=createLeg(.27);
+const legL =
+  makeLeg();
+
+const legR =
+  makeLeg();
+
+legL.position.x=-.22;
+legR.position.x=.22;
+
+player.add(
+  legL,
+  legR
+);
 
 
 /* shoes */
 
-function createShoe(x){
+function makeShoe(x){
 
- const shoe=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    .52,
-    .25,
-    .75
-   ),
-   mat(0x111722)
-  );
+  const s =
+    box(
+      .43,
+      .2,
+      .67,
+      mat(0xf5f5f5,.45,.05),
+      x,
+      .02,
+      -.13
+    );
 
- shoe.position.set(
-  x,
-  .04,
-  -.12
- );
+  player.add(s);
 
- shoe.castShadow=true;
+  return s;
 
- player.add(shoe);
+}
 
- return shoe;
+const shoeL =
+  makeShoe(-.22);
+
+const shoeR =
+  makeShoe(.22);
+
+
+/* =========================================================
+   PLAYER ARMS
+========================================================= */
+
+function makeArm(){
+
+  const g =
+    new THREE.Group();
+
+
+  const sleeve =
+    box(
+      .3,
+      .5,
+      .3,
+      mat(0x1685cb),
+      0,
+      .22,
+      0
+    );
+
+  g.add(sleeve);
+
+
+  const hand =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .17,
+        10,
+        8
+      ),
+      mat(0xe4a078)
+    );
+
+  hand.position.y=-.16;
+
+  g.add(hand);
+
+
+  return g;
+
 }
 
 
-const shoeL=createShoe(-.27);
-const shoeR=createShoe(.27);
+const armL =
+  makeArm();
+
+const armR =
+  makeArm();
+
+armL.position.set(
+  -.58,
+  1.85,
+  0
+);
+
+armR.position.set(
+  .58,
+  1.85,
+  0
+);
+
+player.add(
+  armL,
+  armR
+);
 
 
-/* arms */
+/* =========================================================
+   HOVERBOARD
+========================================================= */
 
-function createArm(x,side){
-
- const arm=
+const hoverboard =
   new THREE.Group();
 
- const mesh=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    .3,
-    1.05,
-    .32
-   ),
-   mat(0xf0b184)
+
+const board =
+  box(
+    1.35,
+    .12,
+    .43,
+    mat(0x703cff,.35,.5),
+    0,
+    .16,
+    0
   );
 
- mesh.position.y=-.48;
-
- arm.add(mesh);
-
- arm.position.set(
-  x,
-  1.9,
-  0
- );
-
- arm.rotation.z=
-  side<0 ? -.12 : .12;
-
- player.add(arm);
-
- return arm;
-}
-
-
-const armL=createArm(-.72,-1);
-const armR=createArm(.72,1);
-
-
-/* =====================================================
-   SKATEBOARD
-===================================================== */
-
-const skateboard=
- new THREE.Group();
-
-const board=
- new THREE.Mesh(
-  new THREE.BoxGeometry(
-   1.7,
-   .12,
-   .42
-  ),
-  mat(0x713cff,.3)
- );
-
-board.position.y=.2;
-
-skateboard.add(board);
+hoverboard.add(board);
 
 
 for(
- const x of [-.55,.55]
+  const x of [-.43,.43]
 ){
 
- const wheel=
-  new THREE.Mesh(
-   new THREE.CylinderGeometry(
-    .11,
-    .11,
-    .12,
-    12
-   ),
-   mat(0x111111)
-  );
-
- wheel.rotation.z=
-  Math.PI/2;
-
- wheel.position.set(
-  x,
-  .05,
-  0
- );
-
- skateboard.add(wheel);
-}
-
-
-skateboard.visible=false;
-
-player.add(skateboard);
-
-
-/* =====================================================
-   HELICOPTER
-===================================================== */
-
-const helicopter=
- new THREE.Group();
-
-
-const heliBody=
- new THREE.Mesh(
-  new THREE.SphereGeometry(
-   .55,
-   16,
-   12
-  ),
-  mat(0xff3333)
- );
-
-heliBody.scale.set(
- 1.35,.75,1
- );
-
-helicopter.add(heliBody);
-
-
-const heliWindow=
- new THREE.Mesh(
-  new THREE.SphereGeometry(
-   .34,
-   16,
-   10
-  ),
-  windowMat
- );
-
-heliWindow.position.z=-.42;
-
-helicopter.add(heliWindow);
-
-
-const heliRotor=
- new THREE.Mesh(
-  new THREE.BoxGeometry(
-   2.4,
-   .07,
-   .16
-  ),
-  mat(0x222222)
- );
-
-heliRotor.position.y=.55;
-
-helicopter.add(heliRotor);
-
-helicopter.position.y=5;
-
-helicopter.visible=false;
-
-player.add(helicopter);
-
-
-/* =====================================================
-   TRAINS
-===================================================== */
-
-const trains=[];
-
-
-function createTrain(
- lane,
- z
-){
-
- const train=
-  new THREE.Group();
-
-
- const base=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    3.15,
-    2.8,
-    8
-   ),
-   trainBodyMat
-  );
-
- base.position.y=1.55;
-
- base.castShadow=true;
- base.receiveShadow=true;
-
- train.add(base);
-
-
- const roof=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    3.35,
-    .35,
-    8.2
-   ),
-   trainRoofMat
-  );
-
- roof.position.y=3.05;
-
- train.add(roof);
-
-
- /* front window */
-
- const front=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    2.5,
-    1.3,
-    .15
-   ),
-   windowMat
-  );
-
- front.position.set(
-   0,
-   2,
-   -4.06
- );
-
- train.add(front);
-
-
- /* side windows */
-
- for(
-  const side of [-1,1]
- ){
-
-  for(
-   let zz=-2.6;
-   zz<=2.6;
-   zz+=1.8
-  ){
-
-   const win=
+  const wheel =
     new THREE.Mesh(
-     new THREE.BoxGeometry(
-      .06,
-      1.15,
-      1.2
-     ),
-     windowMat
+      new THREE.CylinderGeometry(
+        .09,
+        .09,
+        .14,
+        10
+      ),
+      mat(0x11151c,.3,.6)
     );
 
-   win.position.set(
-    side*1.58,
-    2.05,
-    zz
-   );
-
-   train.add(win);
-  }
- }
-
-
- /* wheels */
-
- for(
-  const x of [-1.15,1.15]
- ){
-
-  for(
-   const zz of [-2.7,2.7]
-  ){
-
-   const wheel=
-    new THREE.Mesh(
-     new THREE.CylinderGeometry(
-      .38,
-      .38,
-      .22,
-      14
-     ),
-     mat(0x151515)
-    );
-
-   wheel.rotation.z=
+  wheel.rotation.z=
     Math.PI/2;
 
-   wheel.position.set(
+  wheel.position.set(
     x,
-    .45,
-    zz
-   );
+    .03,
+    0
+  );
 
-   train.add(wheel);
-  }
- }
+  hoverboard.add(wheel);
 
-
- train.position.set(
-  laneX[lane],
-  0,
-  z
- );
-
- world.add(train);
-
- trains.push({
-  mesh:train,
-  lane:lane
- });
 }
 
+hoverboard.visible=false;
 
-/* =====================================================
-   BARRIERS
-===================================================== */
-
-const obstacles=[];
+player.add(hoverboard);
 
 
-function createBarrier(
- lane,
- z
-){
+/* =========================================================
+   JETPACK
+========================================================= */
 
- const g=
+const jetpack =
   new THREE.Group();
 
 
- const left=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    .28,
-    1.5,
-    .28
-   ),
-   mat(0xeeeeee)
+const pack =
+  box(
+    .68,
+    .8,
+    .35,
+    mat(0x424b59,.35,.5),
+    0,
+    1.45,
+    .43
   );
 
- left.position.set(
-  -1,
-  .75,
-  0
- );
+jetpack.add(pack);
 
 
- const right=left.clone();
-
- right.position.x=1;
-
-
- g.add(
-  left,
-  right
- );
-
-
- const bar=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    2.35,
-    .48,
-    .32
-   ),
-   mat(0xe52e2e)
-  );
-
- bar.position.y=1.35;
-
- g.add(bar);
-
-
- const stripe=
-  new THREE.Mesh(
-   new THREE.BoxGeometry(
-    2.1,
-    .12,
-    .34
-   ),
-   mat(0xffffff)
-  );
-
- stripe.position.y=1.35;
- stripe.rotation.z=.15;
-
- g.add(stripe);
-
-
- g.position.set(
-  laneX[lane],
-  0,
-  z
- );
-
- world.add(g);
-
- obstacles.push({
-  mesh:g,
-  lane:lane
- });
-}
-
-
-/* =====================================================
-   COINS
-===================================================== */
-
-const coinObjects=[];
-
-
-function createCoin(
- lane,
- z,
- y=1.4
+for(
+  const x of [-.22,.22]
 ){
 
- const coin=
-  new THREE.Mesh(
-   new THREE.CylinderGeometry(
-    .38,
-    .38,
-    .12,
-    24
-   ),
-   new THREE.MeshStandardMaterial({
-    color:0xffc400,
-    emissive:0x754500,
-    emissiveIntensity:.55,
-    metalness:.7,
-    roughness:.2
-   })
+  const flame =
+    new THREE.Mesh(
+      new THREE.ConeGeometry(
+        .12,
+        .5,
+        8
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0xff6900,
+        emissive:0xff3000,
+        emissiveIntensity:1
+      })
+    );
+
+  flame.rotation.x=
+    Math.PI;
+
+  flame.position.set(
+    x,
+    1.02,
+    .43
   );
 
+  jetpack.add(flame);
 
- coin.rotation.z=
-  Math.PI/2;
-
-
- coin.position.set(
-  laneX[lane],
-  y,
-  z
- );
-
-
- world.add(coin);
-
-
- coinObjects.push({
-  mesh:coin,
-  lane:lane,
-  collected:false
- });
 }
 
+jetpack.visible=false;
 
-/* =====================================================
-   POWERUPS
-===================================================== */
-
-const powers=[];
+player.add(jetpack);
 
 
-function createPower(
- type,
- lane,
- z
-){
-
- const g=
-  new THREE.Group();
-
- let color=0x00ffff;
-
- if(type==="magnet")
-  color=0xff3366;
-
- if(type==="board")
-  color=0x713cff;
-
- if(type==="heli")
-  color=0x33ff66;
-
-
- const body=
-  new THREE.Mesh(
-   new THREE.OctahedronGeometry(.65),
-   new THREE.MeshStandardMaterial({
-    color:color,
-    emissive:color,
-    emissiveIntensity:.4,
-    metalness:.35,
-    roughness:.2
-   })
-  );
-
- g.add(body);
-
-
- g.position.set(
-  laneX[lane],
-  1.5,
-  z
- );
-
-
- world.add(g);
-
-
- powers.push({
-  mesh:g,
-  type:type,
-  lane:lane,
-  collected:false
- });
-}
-
-
-/* =====================================================
-   GENERATE WORLD OBJECTS
-===================================================== */
-
-function generateObjects(){
-
- for(
-  let i=0;
-  i<9;
-  i++
- ){
-
-  createTrain(
-   Math.floor(Math.random()*3),
-   -35-i*30-Math.random()*12
-  );
- }
-
-
- for(
-  let i=0;
-  i<16;
-  i++
- ){
-
-  createBarrier(
-   Math.floor(Math.random()*3),
-   -23-i*17-Math.random()*10
-  );
- }
-
-
- for(
-  let i=0;
-  i<60;
-  i++
- ){
-
-  const lane=
-   Math.floor(Math.random()*3);
-
-  const z=
-   -15-i*6.5;
-
-
-  createCoin(
-   lane,
-   z,
-   1.35+Math.random()*.35
-  );
-
-
-  if(Math.random()<.22){
-
-   createCoin(
-    lane,
-    z-2.5,
-    2.15
-   );
-  }
- }
-
-
- createPower(
-  "magnet",
-  0,
-  -100
- );
-
- createPower(
-  "board",
-  2,
-  -165
- );
-
- createPower(
-  "heli",
-  1,
-  -230
- );
-}
-
-
-generateObjects();
-
-
-/* =====================================================
+/* =========================================================
    GAME STATE
-===================================================== */
+========================================================= */
 
 let running=false;
 let paused=false;
 let gameEnded=false;
 
 let score=0;
-let coinCount=0;
+let coins=0;
 
-let speed=.42;
+let speed=17;
 
-let lane=1;
-let targetX=0;
+let runTime=0;
 
-let velocityY=0;
+let laneIndex=1;
 
-const gravity=-.025;
+let laneTween={
+  active:false,
+  start:0,
+  target:0,
+  time:0,
+  duration:.2
+};
 
-let jumping=false;
-let sliding=false;
+let verticalVelocity=0;
+let jumpY=0;
 
-let slideTimer=0;
+let rolling=false;
+let rollTimer=0;
+
+let jumpTimer=0;
 
 let magnetTimer=0;
+let sneakerTimer=0;
 let boardTimer=0;
-let heliTimer=0;
+let jetTimer=0;
 
-let distance=0;
-
-let cameraShake=0;
+let fallTimer=0;
 
 
-/* =====================================================
-   UI
-===================================================== */
+/* =========================================================
+   TRAIN
+========================================================= */
 
-const scoreEl=
- document.getElementById("score");
+const trains=[];
 
-const coinEl=
- document.getElementById("coinCount");
-
-const startScreen=
- document.getElementById("startScreen");
-
-const gameOver=
- document.getElementById("gameOver");
-
-const finalScore=
- document.getElementById("finalScore");
-
-const finalCoins=
- document.getElementById("finalCoins");
-
-const message=
- document.getElementById("message");
-
-const magnetPower=
- document.getElementById("magnetPower");
-
-const boardPower=
- document.getElementById("boardPower");
-
-const heliPower=
- document.getElementById("heliPower");
+const trainPalette=[
+  0xe53935,
+  0x2377d8,
+  0xf2bb20,
+  0x25a75d,
+  0xa943c8
+];
 
 
-function updateUI(){
+function createTrain(){
 
- scoreEl.textContent=
-  Math.floor(score);
+  const g =
+    new THREE.Group();
 
- coinEl.textContent=
-  coinCount;
-
-
- if(magnetTimer>0){
-
-  magnetPower.style.display="block";
-
-  document.getElementById(
-   "magnetTime"
-  ).textContent=
-   Math.ceil(magnetTimer)+"s";
-
- }else{
-
-  magnetPower.style.display="none";
- }
+  const color =
+    trainPalette[
+      Math.floor(
+        Math.random()*
+        trainPalette.length
+      )
+    ];
 
 
- if(boardTimer>0){
+  const body =
+    box(
+      3.2,
+      3.1,
+      7.8,
+      mat(color,.6,.08),
+      0,
+      1.65,
+      0
+    );
 
-  boardPower.style.display="block";
-
-  document.getElementById(
-   "boardTime"
-  ).textContent=
-   Math.ceil(boardTimer)+"s";
-
- }else{
-
-  boardPower.style.display="none";
- }
+  g.add(body);
 
 
- if(heliTimer>0){
+  /* roof */
 
-  heliPower.style.display="block";
+  const roof =
+    box(
+      3.35,
+      .25,
+      7.95,
+      mat(0x252b35,.4,.25),
+      0,
+      3.25,
+      0
+    );
 
-  document.getElementById(
-   "heliTime"
-  ).textContent=
-   Math.ceil(heliTimer)+"s";
+  g.add(roof);
 
- }else{
 
-  heliPower.style.display="none";
- }
+  /* windows */
+
+  const glassMat =
+    new THREE.MeshStandardMaterial({
+      color:0x9edfff,
+      metalness:.15,
+      roughness:.2
+    });
+
+
+  for(
+    let z=-2.7;
+    z<=2.7;
+    z+=1.8
+  ){
+
+    const winL =
+      box(
+        .75,
+        .85,
+        .08,
+        glassMat,
+        -1.63,
+        2.25,
+        z
+      );
+
+    const winR =
+      box(
+        .75,
+        .85,
+        .08,
+        glassMat,
+        1.63,
+        2.25,
+        z
+      );
+
+    g.add(
+      winL,
+      winR
+    );
+
+  }
+
+
+  /* front windows */
+
+  const frontWindow =
+    box(
+      1.65,
+      .85,
+      .08,
+      glassMat,
+      0,
+      2.25,
+      -3.96
+    );
+
+  g.add(frontWindow);
+
+
+  /* lights */
+
+  for(
+    const x of [-.9,.9]
+  ){
+
+    const light =
+      new THREE.Mesh(
+        new THREE.SphereGeometry(
+          .13,
+          10,
+          8
+        ),
+        new THREE.MeshStandardMaterial({
+          color:0xfff2a3,
+          emissive:0xffd000,
+          emissiveIntensity:1
+        })
+      );
+
+    light.position.set(
+      x,
+      1.05,
+      -3.99
+    );
+
+    g.add(light);
+
+  }
+
+
+  /* graffiti style decals */
+
+  const graffitiColors=[
+    0xff27a8,
+    0x27e8ff,
+    0xffff27,
+    0x8d42ff,
+    0x20ff72
+  ];
+
+
+  for(
+    let i=0;
+    i<7;
+    i++
+  ){
+
+    const decal =
+      box(
+        .08,
+        .22+Math.random()*.35,
+        .7+Math.random()*.7,
+        mat(
+          graffitiColors[
+            Math.floor(
+              Math.random()*
+              graffitiColors.length
+            )
+          ]
+        ),
+        -1.66,
+        .9+Math.random()*1.1,
+        -2.5+i*.75
+      );
+
+    decal.rotation.z =
+      (Math.random()-.5)*.7;
+
+    g.add(decal);
+
+  }
+
+
+  /* wheels */
+
+  for(
+    const x of [-1.25,1.25]
+  ){
+
+    for(
+      const z of [-2.4,2.4]
+    ){
+
+      const wheel =
+        new THREE.Mesh(
+          new THREE.CylinderGeometry(
+            .42,
+            .42,
+            .18,
+            12
+          ),
+          mat(0x11141a,.3,.7)
+        );
+
+      wheel.rotation.z=
+        Math.PI/2;
+
+      wheel.position.set(
+        x,
+        .48,
+        z
+      );
+
+      g.add(wheel);
+
+    }
+
+  }
+
+
+  g.userData={
+    lane:1,
+    active:false
+  };
+
+  world.add(g);
+
+  trains.push(g);
+
+  return g;
+
 }
 
 
-/* =====================================================
+for(
+  let i=0;
+  i<9;
+  i++
+){
+  createTrain();
+}
+
+
+/* =========================================================
+   BARRIERS
+========================================================= */
+
+const barriers=[];
+
+
+function createBarrier(){
+
+  const g =
+    new THREE.Group();
+
+  const poleMat =
+    mat(0x2c3440);
+
+  const warningMat =
+    mat(0xffcc1b);
+
+
+  const left =
+    box(
+      .15,
+      2.1,
+      .15,
+      poleMat,
+      -1.15,
+      1.05,
+      0
+    );
+
+  const right =
+    box(
+      .15,
+      2.1,
+      .15,
+      poleMat,
+      1.15,
+      1.05,
+      0
+    );
+
+  g.add(
+    left,
+    right
+  );
+
+
+  const bar =
+    box(
+      2.55,
+      .3,
+      .22,
+      warningMat,
+      0,
+      1.0,
+      0
+    );
+
+  g.add(bar);
+
+
+  g.userData={
+    type:"low",
+    lane:1,
+    active:false
+  };
+
+
+  world.add(g);
+
+  barriers.push(g);
+
+  return g;
+
+}
+
+
+for(
+  let i=0;
+  i<7;
+  i++
+){
+  createBarrier();
+}
+
+
+/* =========================================================
+   HIGH ROLL BARRIERS
+========================================================= */
+
+const highBarriers=[];
+
+
+function createHighBarrier(){
+
+  const g =
+    new THREE.Group();
+
+
+  const poleMat =
+    mat(0x303742);
+
+
+  for(
+    const x of [-1.15,1.15]
+  ){
+
+    g.add(
+      box(
+        .15,
+        3.2,
+        .15,
+        poleMat,
+        x,
+        1.6,
+        0
+      )
+    );
+
+  }
+
+
+  const bar =
+    box(
+      2.55,
+      .35,
+      .3,
+      mat(0xf04439),
+      0,
+      2.35,
+      0
+    );
+
+  g.add(bar);
+
+
+  const warning =
+    box(
+      2.2,
+      .12,
+      .34,
+      mat(0xffdc21),
+      0,
+      2.15,
+      0
+    );
+
+  g.add(warning);
+
+
+  g.userData={
+    type:"high",
+    lane:1,
+    active:false
+  };
+
+
+  world.add(g);
+
+  highBarriers.push(g);
+
+  return g;
+
+}
+
+
+for(
+  let i=0;
+  i<6;
+  i++
+){
+  createHighBarrier();
+}
+
+
+/* =========================================================
+   COINS
+========================================================= */
+
+const coinPatterns=[];
+
+const coinMaterial =
+  new THREE.MeshStandardMaterial({
+    color:0xffd21f,
+    metalness:.65,
+    roughness:.2,
+    emissive:0x6d4500,
+    emissiveIntensity:.3
+  });
+
+
+function createCoin(){
+
+  const c =
+    new THREE.Mesh(
+      new THREE.TorusGeometry(
+        .28,
+        .085,
+        8,
+        16
+      ),
+      coinMaterial
+    );
+
+  c.rotation.y=
+    Math.PI/2;
+
+  c.castShadow=true;
+
+  c.visible=false;
+
+  world.add(c);
+
+  return c;
+
+}
+
+
+function createPattern(){
+
+  const p={
+    coins:[],
+    type:0,
+    lane:1,
+    baseZ:0,
+    width:0
+  };
+
+
+  for(
+    let i=0;
+    i<10;
+    i++
+  ){
+
+    p.coins.push(
+      createCoin()
+    );
+
+  }
+
+
+  coinPatterns.push(p);
+
+  return p;
+
+}
+
+
+for(
+  let i=0;
+  i<18;
+  i++
+){
+  createPattern();
+}
+
+
+function setCoinPattern(
+  p,
+  startZ
+){
+
+  p.type =
+    Math.floor(
+      Math.random()*3
+    );
+
+  p.lane =
+    Math.floor(
+      Math.random()*3
+    );
+
+  p.baseZ=startZ;
+
+
+  if(
+    p.type===0
+  ){
+
+    /* straight line */
+
+    for(
+      let i=0;
+      i<10;
+      i++
+    ){
+
+      const c=p.coins[i];
+
+      c.visible=true;
+
+      c.position.set(
+        lanes[p.lane],
+        1.25,
+        startZ-i*2.2
+      );
+
+    }
+
+  }
+
+
+  else if(
+    p.type===1
+  ){
+
+    /* curve */
+
+    for(
+      let i=0;
+      i<10;
+      i++
+    ){
+
+      const c=p.coins[i];
+
+      c.visible=true;
+
+      const phase=
+        i/9;
+
+      const laneFloat=
+        p.lane===0
+          ? phase*2
+          : p.lane===2
+            ? 2-phase*2
+            : phase<.5
+              ? phase*2
+              : 2-phase*2;
+
+      const li=
+        Math.max(
+          0,
+          Math.min(
+            2,
+            Math.round(laneFloat)
+          )
+        );
+
+      c.position.set(
+        lanes[li],
+        1.25+
+          Math.sin(
+            phase*Math.PI
+          )*.7,
+        startZ-i*2.15
+      );
+
+    }
+
+  }
+
+
+  else{
+
+    /* jump arc */
+
+    for(
+      let i=0;
+      i<10;
+      i++
+    ){
+
+      const c=p.coins[i];
+
+      c.visible=true;
+
+      const phase=i/9;
+
+      c.position.set(
+        lanes[p.lane],
+        1.2+
+          Math.sin(
+            phase*Math.PI
+          )*2.4,
+        startZ-i*2.0
+      );
+
+    }
+
+  }
+
+}
+
+
+for(
+  let i=0;
+  i<coinPatterns.length;
+  i++
+){
+
+  setCoinPattern(
+    coinPatterns[i],
+    -25-i*34
+  );
+
+}
+
+
+/* =========================================================
+   POWERUPS
+========================================================= */
+
+const powers=[];
+
+const powerTypes=[
+  "magnet",
+  "sneakers",
+  "board",
+  "jet"
+];
+
+
+function createPower(){
+
+  const g =
+    new THREE.Group();
+
+
+  const body =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .62,.62,.62
+      ),
+      mat(0x7c45ff,.35,.25)
+    );
+
+  body.rotation.y=.7;
+
+  g.add(body);
+
+
+  const ring =
+    new THREE.Mesh(
+      new THREE.TorusGeometry(
+        .42,
+        .07,
+        8,
+        16
+      ),
+      mat(0xffdf25,.25,.5)
+    );
+
+  ring.rotation.x=
+    Math.PI/2;
+
+  g.add(ring);
+
+
+  g.visible=false;
+
+  g.userData={
+    type:"magnet",
+    active:false
+  };
+
+
+  world.add(g);
+
+  powers.push(g);
+
+  return g;
+
+}
+
+
+for(
+  let i=0;
+  i<8;
+  i++
+){
+  createPower();
+}
+
+
+function placePower(
+  p,
+  z
+){
+
+  p.userData.type=
+    powerTypes[
+      Math.floor(
+        Math.random()*
+        powerTypes.length
+      )
+    ];
+
+  p.userData.active=true;
+
+  p.visible=true;
+
+  p.position.set(
+    lanes[
+      Math.floor(
+        Math.random()*3
+      )
+    ],
+    1.4,
+    z
+  );
+
+}
+
+
+for(
+  let i=0;
+  i<powers.length;
+  i++
+){
+  placePower(
+    powers[i],
+    -80-i*75
+  );
+}
+
+
+/* =========================================================
+   SPAWN OBSTACLES
+========================================================= */
+
+function randomLane(){
+  return Math.floor(
+    Math.random()*3
+  );
+}
+
+
+function placeTrain(
+  train,
+  z
+){
+
+  train.userData.lane=
+    randomLane();
+
+  train.userData.active=true;
+
+  train.position.set(
+    lanes[
+      train.userData.lane
+    ],
+    0,
+    z
+  );
+
+}
+
+
+function placeLowBarrier(
+  b,
+  z
+){
+
+  b.userData.lane=
+    randomLane();
+
+  b.userData.active=true;
+
+  b.position.set(
+    lanes[
+      b.userData.lane
+    ],
+    0,
+    z
+  );
+
+}
+
+
+function placeHighBarrier(
+  b,
+  z
+){
+
+  b.userData.lane=
+    randomLane();
+
+  b.userData.active=true;
+
+  b.position.set(
+    lanes[
+      b.userData.lane
+    ],
+    0,
+    z
+  );
+
+}
+
+
+/* trains */
+
+for(
+  let i=0;
+  i<trains.length;
+  i++
+){
+
+  placeTrain(
+    trains[i],
+    -45-i*58
+  );
+
+}
+
+
+/* low barriers */
+
+for(
+  let i=0;
+  i<barriers.length;
+  i++
+){
+
+  placeLowBarrier(
+    barriers[i],
+    -100-i*73
+  );
+
+}
+
+
+/* high barriers */
+
+for(
+  let i=0;
+  i<highBarriers.length;
+  i++
+){
+
+  placeHighBarrier(
+    highBarriers[i],
+    -135-i*87
+  );
+
+}
+
+
+/* =========================================================
+   COIN COLLECTION
+========================================================= */
+
+function collectCoin(c){
+
+  if(!c.visible)
+    return;
+
+  c.visible=false;
+
+  coins++;
+
+  score+=25;
+
+  coinEl.textContent=coins;
+
+}
+
+
+/* =========================================================
+   POWERUP
+========================================================= */
+
+function activatePower(type){
+
+  if(type==="magnet"){
+    magnetTimer=8;
+    showMessage("🧲 MAGNET!");
+  }
+
+  if(type==="sneakers"){
+    sneakerTimer=8;
+    showMessage("👟 SUPER JUMP!");
+  }
+
+  if(type==="board"){
+    boardTimer=8;
+    showMessage("🛹 HOVERBOARD!");
+  }
+
+  if(type==="jet"){
+    jetTimer=7;
+    showMessage("🚀 JETPACK!");
+  }
+
+}
+
+
+/* =========================================================
    MESSAGE
-===================================================== */
+========================================================= */
 
 let messageTimer=0;
 
 
 function showMessage(text){
 
- message.textContent=text;
+  messageEl.textContent=text;
 
- message.style.display="block";
+  messageEl.style.display=
+    "block";
 
- messageTimer=1.1;
+  messageTimer=1.1;
+
 }
 
 
-/* =====================================================
-   PLAYER MOVEMENT
-===================================================== */
-
-function moveLeft(){
-
- if(!running || paused)
-  return;
-
- lane=
-  Math.max(
-   0,
-   lane-1
-  );
-
- targetX=
-  laneX[lane];
-
- cameraShake=.12;
-}
-
-
-function moveRight(){
-
- if(!running || paused)
-  return;
-
- lane=
-  Math.min(
-   2,
-   lane+1
-  );
-
- targetX=
-  laneX[lane];
-
- cameraShake=.12;
-}
-
-
-function jump(){
-
- if(!running || paused)
-  return;
-
- if(jumping)
-  return;
-
- if(sliding){
-
-  sliding=false;
-  slideTimer=0;
- }
-
- jumping=true;
-
- velocityY=.49;
-
- cameraShake=.08;
-}
-
-
-function slide(){
-
- if(!running || paused)
-  return;
-
- if(jumping){
-
-  velocityY=-.42;
-
-  return;
- }
-
- if(sliding)
-  return;
-
- sliding=true;
-
- slideTimer=.72;
-
- cameraShake=.05;
-}
-
-
-/* =====================================================
-   REAL MOBILE SWIPE CONTROL
-===================================================== */
+/* =========================================================
+   SWIPE CONTROL
+========================================================= */
 
 let touchStartX=0;
 let touchStartY=0;
-
-let touchStartTime=0;
 
 let touchActive=false;
 
 
 renderer.domElement.addEventListener(
- "touchstart",
- e=>{
+  "touchstart",
+  e=>{
 
-  if(!running)
-   return;
+    if(!running || paused)
+      return;
 
-  const t=
-   e.changedTouches[0];
+    const t=e.changedTouches[0];
 
-  touchStartX=t.clientX;
-  touchStartY=t.clientY;
+    touchStartX=t.clientX;
+    touchStartY=t.clientY;
 
-  touchStartTime=
-   performance.now();
+    touchActive=true;
 
-  touchActive=true;
-
-  e.preventDefault();
-
- },
- {passive:false}
+  },
+  {passive:true}
 );
 
 
 renderer.domElement.addEventListener(
- "touchend",
- e=>{
+  "touchend",
+  e=>{
 
-  if(!touchActive)
-   return;
+    if(!running || paused)
+      return;
 
-  const t=
-   e.changedTouches[0];
+    if(!touchActive)
+      return;
 
-  const dx=
-   t.clientX-touchStartX;
+    touchActive=false;
 
-  const dy=
-   t.clientY-touchStartY;
+    const t=e.changedTouches[0];
 
-  const duration=
-   performance.now()-touchStartTime;
+    const dx=
+      t.clientX-touchStartX;
 
-  touchActive=false;
-
-  const ax=
-   Math.abs(dx);
-
-  const ay=
-   Math.abs(dy);
+    const dy=
+      t.clientY-touchStartY;
 
 
-  /* very small tap */
+    /* EXACT SWIPE THRESHOLDS */
 
-  if(
-   Math.max(ax,ay)<28
-  ){
+    if(
+      Math.abs(dx)>50 &&
+      Math.abs(dx)>Math.abs(dy)
+    ){
 
-   e.preventDefault();
-   return;
-  }
+      if(dx>50)
+        moveLane(1);
+
+      else if(dx<-50)
+        moveLane(-1);
+
+      return;
+    }
 
 
-  /* swipe */
+    if(
+      Math.abs(dy)>50
+    ){
 
-  if(ax>ay){
+      if(dy<-50)
+        jump();
 
-   if(dx>0)
-    moveRight();
-   else
-    moveLeft();
+      else if(dy>50)
+        roll();
 
-  }else{
+    }
 
-   if(dy<0)
-    jump();
-   else
-    slide();
-  }
-
-  e.preventDefault();
-
- },
- {passive:false}
+  },
+  {passive:true}
 );
 
 
-/* =====================================================
-   PAUSE
-===================================================== */
+/* =========================================================
+   LANE MOVEMENT
+========================================================= */
 
-function togglePause(){
+function moveLane(direction){
 
- if(!running || gameEnded)
-  return;
+  const next=
+    Math.max(
+      0,
+      Math.min(
+        2,
+        laneIndex+direction
+      )
+    );
 
- paused=!paused;
-
- document.getElementById(
-  "pause"
- ).textContent=
-  paused ? "▶" : "Ⅱ";
-}
-
-
-document.getElementById(
- "pause"
-).addEventListener(
- "click",
- togglePause
-);
-
-
-/* =====================================================
-   POWERUP
-===================================================== */
-
-function collectPower(p){
-
- p.collected=true;
-
- p.mesh.visible=false;
-
-
- if(p.type==="magnet"){
-
-  magnetTimer=10;
-
-  showMessage("🧲 MAGNET!");
-
- }
-
-
- if(p.type==="board"){
-
-  boardTimer=12;
-
-  skateboard.visible=true;
-
-  showMessage("🛹 SKATEBOARD!");
-
- }
-
-
- if(p.type==="heli"){
-
-  heliTimer=9;
-
-  helicopter.visible=true;
-
-  showMessage("🚁 HELICOPTER!");
-
- }
-}
-
-
-/* =====================================================
-   COIN
-===================================================== */
-
-function collectCoin(c){
-
- c.collected=true;
-
- c.mesh.visible=false;
-
- coinCount++;
-
- score+=25;
-
- cameraShake=.05;
-}
-
-
-/* =====================================================
-   COLLISION
-===================================================== */
-
-function checkCollisions(){
-
- if(heliTimer>0)
-  return;
-
-
- for(const t of trains){
-
-  const dz=
-   Math.abs(
-    t.mesh.position.z-
-    player.position.z
-   );
-
-  const dx=
-   Math.abs(
-    t.mesh.position.x-
-    player.position.x
-   );
-
-
-  if(
-   dz<3.1 &&
-   dx<1.55
-  ){
-
-   if(
-    player.position.y<2.05 &&
-    !sliding
-   ){
-
-    endGame();
-
+  if(next===laneIndex)
     return;
-   }
-  }
- }
+
+  laneIndex=next;
+
+  laneTween.active=true;
+
+  laneTween.start=
+    player.position.x;
+
+  laneTween.target=
+    lanes[laneIndex];
+
+  laneTween.time=0;
+
+}
 
 
- for(const o of obstacles){
+/* =========================================================
+   JUMP
+========================================================= */
 
-  const dz=
-   Math.abs(
-    o.mesh.position.z-
-    player.position.z
-   );
+function jump(){
 
-  const dx=
-   Math.abs(
-    o.mesh.position.x-
-    player.position.x
-   );
-
-
-  if(
-   dz<1.7 &&
-   dx<1.4
-  ){
-
-   if(
-    player.position.y<1.3 &&
-    !sliding
-   ){
-
-    endGame();
-
+  if(jetTimer>0)
     return;
-   }
-  }
- }
+
+  if(
+    jumpY>0.01 ||
+    rolling
+  )
+    return;
+
+  verticalVelocity =
+    sneakerTimer>0
+      ? 15
+      : 11.5;
+
+  jumpTimer=.1;
+
 }
 
 
-/* =====================================================
-   COINS UPDATE
-===================================================== */
+/* =========================================================
+   ROLL
+========================================================= */
 
-function updateCoins(){
+function roll(){
 
- for(
-  const c of coinObjects
- ){
+  if(
+    rolling ||
+    jumpY>0.15 ||
+    jetTimer>0
+  )
+    return;
 
-  if(c.collected)
-   continue;
+  rolling=true;
 
+  rollTimer=.8;
 
-  c.mesh.rotation.y+=.09;
-
-
-  if(magnetTimer>0){
-
-   const dx=
-    player.position.x-
-    c.mesh.position.x;
-
-   const dy=
-    player.position.y+1.3-
-    c.mesh.position.y;
-
-   const dz=
-    player.position.z-
-    c.mesh.position.z;
-
-
-   const d=
-    Math.sqrt(
-     dx*dx+
-     dy*dy+
-     dz*dz
-    );
-
-
-   if(d<9){
-
-    c.mesh.position.x+=
-     dx*.13;
-
-    c.mesh.position.y+=
-     dy*.13;
-
-    c.mesh.position.z+=
-     dz*.13;
-   }
-  }
-
-
-  const dx=
-   player.position.x-
-   c.mesh.position.x;
-
-  const dy=
-   player.position.y+1.35-
-   c.mesh.position.y;
-
-  const dz=
-   player.position.z-
-   c.mesh.position.z;
-
-
-  const d=
-   Math.sqrt(
-    dx*dx+
-    dy*dy+
-    dz*dz
-   );
-
-
-  if(d<1.25){
-
-   collectCoin(c);
-  }
- }
 }
 
 
-/* =====================================================
-   POWER UPDATE
-===================================================== */
-
-function updatePowers(){
-
- for(
-  const p of powers
- ){
-
-  if(p.collected)
-   continue;
-
-
-  p.mesh.rotation.y+=.045;
-
-  p.mesh.position.y=
-   1.5+
-   Math.sin(
-    performance.now()*.004
-   )*.25;
-
-
-  const dx=
-   player.position.x-
-   p.mesh.position.x;
-
-  const dy=
-   player.position.y+1.3-
-   p.mesh.position.y;
-
-  const dz=
-   player.position.z-
-   p.mesh.position.z;
-
-
-  const d=
-   Math.sqrt(
-    dx*dx+
-    dy*dy+
-    dz*dz
-   );
-
-
-  if(d<1.5){
-
-   collectPower(p);
-  }
- }
-}
-
-
-/* =====================================================
-   RECYCLE
-===================================================== */
-
-function recycleObjects(){
-
- for(
-  const t of trains
- ){
-
-  if(
-   t.mesh.position.z>18
-  ){
-
-   t.mesh.position.z=
-    -220-
-    Math.random()*100;
-
-   t.lane=
-    Math.floor(
-     Math.random()*3
-    );
-
-   t.mesh.position.x=
-    laneX[t.lane];
-  }
- }
-
-
- for(
-  const o of obstacles
- ){
-
-  if(
-   o.mesh.position.z>18
-  ){
-
-   o.mesh.position.z=
-    -180-
-    Math.random()*100;
-
-   o.lane=
-    Math.floor(
-     Math.random()*3
-    );
-
-   o.mesh.position.x=
-    laneX[o.lane];
-  }
- }
-
-
- for(
-  const c of coinObjects
- ){
-
-  if(
-   c.mesh.position.z>20
-  ){
-
-   c.mesh.position.z=
-    -180-
-    Math.random()*130;
-
-   c.mesh.position.x=
-    laneX[
-     Math.floor(
-      Math.random()*3
-     )
-    ];
-
-   c.mesh.position.y=
-    1.3+
-    Math.random()*.9;
-
-   c.collected=false;
-
-   c.mesh.visible=true;
-  }
- }
-
-
- for(
-  const p of powers
- ){
-
-  if(
-   p.mesh.position.z>20
-  ){
-
-   p.mesh.position.z=
-    -260-
-    Math.random()*120;
-
-   p.mesh.position.x=
-    laneX[
-     Math.floor(
-      Math.random()*3
-     )
-    ];
-
-   p.collected=false;
-
-   p.mesh.visible=true;
-  }
- }
-}
-
-
-/* =====================================================
+/* =========================================================
    PLAYER ANIMATION
-===================================================== */
-
-let runTime=0;
-
+========================================================= */
 
 function animatePlayer(dt){
 
- runTime+=
-  dt*.018*
-  (boardTimer>0?1.25:1);
+  runTime+=dt*(
+    8+
+    speed*.32
+  );
 
-
- /* =================================
-    SMOOTH RUN ANIMATION
- ================================= */
-
- if(!jumping && !sliding){
 
   const swing=
-   Math.sin(runTime)*.7;
-
-  legL.rotation.x=
-   swing;
-
-  legR.rotation.x=
-   -swing;
-
-  armL.rotation.x=
-   -swing*.8;
-
-  armR.rotation.x=
-   swing*.8;
-
-
-  /* running bounce */
-
-  const bounce=
-   Math.abs(
-    Math.sin(runTime*2)
-   )*.055;
-
-  player.position.y=
-   bounce;
- }
-
-
- /* =================================
-    JUMP ANIMATION
- ================================= */
-
- if(jumping){
-
-  player.position.y+=
-   velocityY;
-
-  velocityY+=gravity;
-
-
-  /* tuck legs */
-
-  legL.rotation.x=-.9;
-  legR.rotation.x=-.9;
-
-  armL.rotation.x=.7;
-  armR.rotation.x=.7;
-
-
-  player.rotation.x=
-   THREE.MathUtils.lerp(
-    player.rotation.x,
-    -.12,
-    .15
-   );
+    Math.sin(runTime)*
+    .72;
 
 
   if(
-   player.position.y<=0
+    !rolling &&
+    jumpY<.1 &&
+    jetTimer<=0
   ){
 
-   player.position.y=0;
+    legL.rotation.x=
+      swing;
 
-   velocityY=0;
+    legR.rotation.x=
+      -swing;
 
-   jumping=false;
+    armL.rotation.x=
+      -swing*.8;
 
-   player.rotation.x=0;
+    armR.rotation.x=
+      swing*.8;
+
+
+    player.position.y +=
+      (
+        Math.sin(runTime*2)*.035
+        -player.position.y
+      )*.08;
+
   }
- }
 
 
- /* =================================
-    SLIDE ANIMATION
- ================================= */
+  if(jumpY>.1){
 
- if(sliding){
+    /* tucked legs */
 
-  player.scale.y=
-   THREE.MathUtils.lerp(
-    player.scale.y,
-    .58,
-    .25
-   );
+    legL.rotation.x=-1.05;
+    legR.rotation.x=-1.05;
 
-  player.rotation.x=
-   THREE.MathUtils.lerp(
-    player.rotation.x,
-    -.08,
-    .2
-   );
+    legL.position.y=.9;
+    legR.position.y=.9;
+
+    armL.rotation.x=-.65;
+    armR.rotation.x=.65;
+
+  }
 
 
-  legL.rotation.x=0;
-  legR.rotation.x=0;
+  else{
 
-  armL.rotation.x=-.5;
-  armR.rotation.x=-.5;
+    legL.position.y=.0;
+    legR.position.y=.0;
 
- }else{
+  }
 
-  player.scale.y=
-   THREE.MathUtils.lerp(
-    player.scale.y,
-    1,
-    .25
-   );
 
-  if(!jumping)
-   player.rotation.x=
-    THREE.MathUtils.lerp(
-     player.rotation.x,
-     0,
-     .2
+  if(rolling){
+
+    player.scale.y +=
+      (
+        .52-player.scale.y
+      )*.25;
+
+    player.rotation.z +=
+      dt*9;
+
+    armL.rotation.x=.8;
+    armR.rotation.x=-.8;
+
+  }
+
+  else{
+
+    player.scale.y +=
+      (
+        1-player.scale.y
+      )*.2;
+
+    player.rotation.z +=
+      (0-player.rotation.z)*.2;
+
+  }
+
+
+  if(
+    boardTimer>0
+  ){
+
+    hoverboard.visible=true;
+
+    hoverboard.rotation.z=
+      Math.sin(runTime*1.7)*.08;
+
+  }
+  else{
+
+    hoverboard.visible=false;
+
+  }
+
+
+  if(
+    jetTimer>0
+  ){
+
+    jetpack.visible=true;
+
+    jetpack.rotation.z=
+      Math.sin(runTime*2)*.08;
+
+  }
+  else{
+
+    jetpack.visible=false;
+
+  }
+
+}
+
+
+/* =========================================================
+   COLLISION HELPERS
+========================================================= */
+
+function laneClose(
+  objectLane
+){
+
+  return Math.abs(
+    player.position.x-
+    lanes[objectLane]
+  )<1.15;
+
+}
+
+
+function zClose(
+  z,
+  distance
+){
+
+  return Math.abs(
+    z-player.position.z
+  )<distance;
+
+}
+
+
+/* =========================================================
+   TRAIN COLLISION
+========================================================= */
+
+function checkTrainCollision(){
+
+  for(
+    const train of trains
+  ){
+
+    if(
+      !train.userData.active
+    )
+      continue;
+
+    if(
+      !laneClose(
+        train.userData.lane
+      )
+    )
+      continue;
+
+    if(
+      !zClose(
+        train.position.z,
+        4.0
+      )
+    )
+      continue;
+
+
+    /* power protection */
+
+    if(
+      boardTimer>0 ||
+      jetTimer>0
+    )
+      continue;
+
+
+    /*
+      Jump or roll can avoid the collision.
+      The roll rule is intentionally included
+      for this touch-controlled runner.
+    */
+
+    if(
+      jumpY>1.1 ||
+      rolling
+    )
+      continue;
+
+
+    endGame();
+
+    return;
+
+  }
+
+}
+
+
+/* =========================================================
+   LOW BARRIER COLLISION
+========================================================= */
+
+function checkLowBarrierCollision(){
+
+  for(
+    const b of barriers
+  ){
+
+    if(
+      !b.userData.active
+    )
+      continue;
+
+    if(
+      !laneClose(
+        b.userData.lane
+      )
+    )
+      continue;
+
+    if(
+      !zClose(
+        b.position.z,
+        2.1
+      )
+    )
+      continue;
+
+
+    if(
+      boardTimer>0 ||
+      jetTimer>0
+    )
+      continue;
+
+
+    /*
+      Low obstacle:
+      must jump over it.
+    */
+
+    if(
+      jumpY>1.05
+    )
+      continue;
+
+
+    endGame();
+
+    return;
+
+  }
+
+}
+
+
+/* =========================================================
+   HIGH BARRIER COLLISION
+========================================================= */
+
+function checkHighBarrierCollision(){
+
+  for(
+    const b of highBarriers
+  ){
+
+    if(
+      !b.userData.active
+    )
+      continue;
+
+    if(
+      !laneClose(
+        b.userData.lane
+      )
+    )
+      continue;
+
+    if(
+      !zClose(
+        b.position.z,
+        2.0
+      )
+    )
+      continue;
+
+
+    if(
+      boardTimer>0 ||
+      jetTimer>0
+    )
+      continue;
+
+
+    /*
+      High overhead barrier:
+      roll underneath it.
+    */
+
+    if(
+      rolling ||
+      jumpY<.6
+    )
+      continue;
+
+
+    endGame();
+
+    return;
+
+  }
+
+}
+
+
+/* =========================================================
+   COINS UPDATE
+========================================================= */
+
+function updateCoins(dt){
+
+  for(
+    const pattern of coinPatterns
+  ){
+
+    let farthest=99999;
+    let nearest=99999;
+
+
+    for(
+      const c of pattern.coins
+    ){
+
+      if(!c.visible)
+        continue;
+
+
+      c.rotation.y +=
+        dt*7;
+
+
+      c.rotation.z +=
+        dt*1.5;
+
+
+      c.position.z +=
+        speed*dt;
+
+
+      farthest=
+        Math.max(
+          farthest,
+          c.position.z
+        );
+
+      nearest=
+        Math.min(
+          nearest,
+          c.position.z
+        );
+
+
+      let dx=
+        c.position.x-
+        player.position.x;
+
+      let dy=
+        c.position.y-
+        (
+          player.position.y+
+          1.4
+        );
+
+      let dz=
+        c.position.z-
+        player.position.z;
+
+
+      /* magnet */
+
+      if(
+        magnetTimer>0 &&
+        Math.sqrt(
+          dx*dx+dy*dy+dz*dz
+        )<8
+      ){
+
+        c.position.x +=
+          -dx*dt*7;
+
+        c.position.y +=
+          -dy*dt*7;
+
+        c.position.z +=
+          -dz*dt*7;
+
+      }
+
+
+      dx=
+        c.position.x-
+        player.position.x;
+
+      dy=
+        c.position.y-
+        (
+          player.position.y+
+          1.35
+        );
+
+      dz=
+        c.position.z-
+        player.position.z;
+
+
+      if(
+        Math.sqrt(
+          dx*dx+dy*dy+dz*dz
+        )<.8
+      ){
+
+        collectCoin(c);
+
+      }
+
+    }
+
+
+    if(
+      nearest>22
+    ){
+
+      setCoinPattern(
+        pattern,
+        -620-
+        Math.random()*180
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   POWER UPDATE
+========================================================= */
+
+function updatePowers(dt){
+
+  for(
+    const p of powers
+  ){
+
+    if(!p.userData.active)
+      continue;
+
+    p.position.z +=
+      speed*dt;
+
+    p.rotation.y +=
+      dt*3;
+
+    p.rotation.x +=
+      dt*2;
+
+
+    const dx=
+      p.position.x-
+      player.position.x;
+
+    const dy=
+      p.position.y-
+      (player.position.y+1.4);
+
+    const dz=
+      p.position.z-
+      player.position.z;
+
+
+    if(
+      Math.sqrt(
+        dx*dx+dy*dy+dz*dz
+      )<1
+    ){
+
+      activatePower(
+        p.userData.type
+      );
+
+      p.visible=false;
+
+      p.userData.active=false;
+
+    }
+
+
+    if(
+      p.position.z>25
+    ){
+
+      placePower(
+        p,
+        -650-
+        Math.random()*180
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   OBSTACLE RECYCLE
+========================================================= */
+
+function updateTrains(dt){
+
+  for(
+    const train of trains
+  ){
+
+    if(!train.userData.active)
+      continue;
+
+    train.position.z +=
+      speed*dt;
+
+
+    if(
+      train.position.z>30
+    ){
+
+      placeTrain(
+        train,
+        -650-
+        Math.random()*200
+      );
+
+    }
+
+  }
+
+}
+
+
+function updateBarriers(dt){
+
+  for(
+    const b of barriers
+  ){
+
+    if(!b.userData.active)
+      continue;
+
+    b.position.z +=
+      speed*dt;
+
+
+    if(
+      b.position.z>30
+    ){
+
+      placeLowBarrier(
+        b,
+        -650-
+        Math.random()*200
+      );
+
+    }
+
+  }
+
+
+  for(
+    const b of highBarriers
+  ){
+
+    if(!b.userData.active)
+      continue;
+
+    b.position.z +=
+      speed*dt;
+
+
+    if(
+      b.position.z>30
+    ){
+
+      placeHighBarrier(
+        b,
+        -650-
+        Math.random()*200
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   PLAYER PHYSICS
+========================================================= */
+
+function updatePlayer(dt){
+
+  /* lane tween */
+
+  if(
+    laneTween.active
+  ){
+
+    laneTween.time +=dt;
+
+    const t=
+      Math.min(
+        1,
+        laneTween.time/
+        laneTween.duration
+      );
+
+    const smooth=
+      t<.5
+        ? 2*t*t
+        : 1-Math.pow(
+            -2*t+2,
+            2
+          )/2;
+
+    player.position.x=
+      THREE.MathUtils.lerp(
+        laneTween.start,
+        laneTween.target,
+        smooth
+      );
+
+    if(t>=1){
+
+      player.position.x=
+        laneTween.target;
+
+      laneTween.active=false;
+
+    }
+
+  }
+
+
+  /* jetpack */
+
+  if(
+    jetTimer>0
+  ){
+
+    player.position.y=
+      4.5+
+      Math.sin(
+        runTime*2.5
+      )*.3;
+
+    jumpY=
+      player.position.y;
+
+    verticalVelocity=0;
+
+    return;
+
+  }
+
+
+  /* jump */
+
+  if(
+    jumpY>0 ||
+    verticalVelocity>0
+  ){
+
+    verticalVelocity +=
+      -28*dt;
+
+    jumpY +=
+      verticalVelocity*dt;
+
+
+    if(
+      jumpY<=0
+    ){
+
+      jumpY=0;
+      verticalVelocity=0;
+
+    }
+
+    player.position.y=
+      jumpY;
+
+  }
+
+
+  /* roll */
+
+  if(rolling){
+
+    rollTimer-=dt;
+
+    if(
+      rollTimer<=0
+    ){
+
+      rolling=false;
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   TIMER UPDATE
+========================================================= */
+
+function updateTimers(dt){
+
+  magnetTimer=
+    Math.max(
+      0,
+      magnetTimer-dt
     );
- }
+
+  sneakerTimer=
+    Math.max(
+      0,
+      sneakerTimer-dt
+    );
+
+  boardTimer=
+    Math.max(
+      0,
+      boardTimer-dt
+    );
+
+  jetTimer=
+    Math.max(
+      0,
+      jetTimer-dt
+    );
 
 
- /* =================================
-    LANE LEAN
- ================================= */
-
- const laneDifference=
-  targetX-player.position.x;
-
- player.rotation.z=
-  THREE.MathUtils.lerp(
-   player.rotation.z,
-   -laneDifference*.055,
-   .18
+  setPowerUI(
+    "magnetPower",
+    "magnetTime",
+    magnetTimer
   );
 
-
- /* skateboard */
-
- skateboard.rotation.z=
-  Math.sin(runTime)*.04;
-
-
- /* helicopter */
-
- if(heliTimer>0){
-
-  helicopter.visible=true;
-
-  heliRotor.rotation.y+=.45;
-
-  player.position.y=
-   THREE.MathUtils.lerp(
-    player.position.y,
-    4.7,
-    .08
-   );
-
- }else{
-
-  helicopter.visible=false;
- }
-
-
- /* player shadow */
-
- playerShadow.position.x=
-  player.position.x;
-
- playerShadow.position.z=
-  player.position.z;
-
- const shadowScale=
-  Math.max(
-   .55,
-   1-player.position.y*.07
+  setPowerUI(
+    "sneakerPower",
+    "sneakerTime",
+    sneakerTimer
   );
 
- playerShadow.scale.set(
-  shadowScale,
-  shadowScale,
-  shadowScale
- );
+  setPowerUI(
+    "boardPower",
+    "boardTime",
+    boardTimer
+  );
+
+  setPowerUI(
+    "jetPower",
+    "jetTime",
+    jetTimer
+  );
+
 }
 
 
-/* =====================================================
+function setPowerUI(
+  boxId,
+  timeId,
+  value
+){
+
+  const boxEl=
+    document.getElementById(
+      boxId
+    );
+
+  const timeEl=
+    document.getElementById(
+      timeId
+    );
+
+
+  if(value>0){
+
+    boxEl.style.display=
+      "block";
+
+    timeEl.textContent=
+      Math.ceil(value)+"s";
+
+  }
+  else{
+
+    boxEl.style.display=
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+function updateScore(dt){
+
+  score+=
+    speed*dt*1.2;
+
+  scoreEl.textContent=
+    Math.floor(score);
+
+
+  /* gradual speed increase */
+
+  speed=
+    Math.min(
+      34,
+      speed+
+      dt*.42
+    );
+
+}
+
+
+/* =========================================================
    CAMERA
-===================================================== */
+========================================================= */
 
-function updateCamera(){
+function updateCamera(dt){
 
- const desiredX=
-  player.position.x*.22;
+  const targetX=
+    player.position.x*.18;
 
- camera.position.x+=
-  (desiredX-camera.position.x)
-  *.09;
-
-
- const desiredY=
-  heliTimer>0
-  ?7
-  :5.8;
+  camera.position.x +=
+    (
+      targetX-camera.position.x
+    )*.08;
 
 
- camera.position.y+=
-  (desiredY-camera.position.y)
-  *.07;
+  const targetY=
+    5.6+
+    player.position.y*.12;
+
+  camera.position.y +=
+    (
+      targetY-camera.position.y
+    )*.08;
 
 
- let shakeX=0;
- let shakeY=0;
+  camera.lookAt(
+    player.position.x*.18,
+    1.4+
+      player.position.y*.08,
+    -20
+  );
 
-
- if(cameraShake>0){
-
-  shakeX=
-   (Math.random()-.5)*
-   cameraShake;
-
-  shakeY=
-   (Math.random()-.5)*
-   cameraShake;
-
-  cameraShake*=.82;
- }
-
-
- camera.position.x+=shakeX;
- camera.position.y+=shakeY;
-
-
- camera.lookAt(
-  player.position.x*.16,
-  heliTimer>0 ?3.4:1.75,
-  -26
- );
 }
 
 
-/* =====================================================
-   RESET
-===================================================== */
+/* =========================================================
+   GAME OVER FALL
+========================================================= */
 
-function resetGame(){
+function updateFall(dt){
 
- score=0;
- coinCount=0;
+  fallTimer+=dt;
 
- speed=.42;
+  player.rotation.z +=
+    dt*5;
 
- lane=1;
- targetX=0;
+  player.rotation.x +=
+    dt*2;
 
- player.position.set(
-  0,0,4
- );
+  player.position.y -=
+    dt*4;
 
- player.rotation.set(
-  0,0,0
- );
-
- player.scale.set(
-  1,1,1
- );
-
- jumping=false;
- sliding=false;
-
- velocityY=0;
-
- slideTimer=0;
-
- magnetTimer=0;
- boardTimer=0;
- heliTimer=0;
-
- skateboard.visible=false;
- helicopter.visible=false;
-
- gameEnded=false;
- paused=false;
-
- distance=0;
-
- cameraShake=0;
-
- document.getElementById(
-  "pause"
- ).textContent="Ⅱ";
+  player.position.z +=
+    dt*1.5;
 
 
- for(
-  const t of trains
- ){
+  if(
+    fallTimer>.75
+  ){
 
-  t.mesh.position.z=
-   -35-
-   Math.random()*190;
+    finalScoreEl.textContent=
+      Math.floor(score);
 
-  t.lane=
-   Math.floor(
-    Math.random()*3
-   );
+    finalCoinsEl.textContent=
+      coins;
 
-  t.mesh.position.x=
-   laneX[t.lane];
- }
+    gameOverScreen.style.display=
+      "flex";
 
+  }
 
- for(
-  const o of obstacles
- ){
-
-  o.mesh.position.z=
-   -20-
-   Math.random()*200;
-
-  o.lane=
-   Math.floor(
-    Math.random()*3
-   );
-
-  o.mesh.position.x=
-   laneX[o.lane];
- }
-
-
- for(
-  const c of coinObjects
- ){
-
-  c.mesh.position.z=
-   -15-
-   Math.random()*240;
-
-  c.mesh.position.x=
-   laneX[
-    Math.floor(
-     Math.random()*3
-    )
-   ];
-
-  c.mesh.position.y=
-   1.3+
-   Math.random()*.9;
-
-  c.collected=false;
-
-  c.mesh.visible=true;
- }
-
-
- for(
-  const p of powers
- ){
-
-  p.mesh.position.z=
-   -80-
-   Math.random()*250;
-
-  p.mesh.position.x=
-   laneX[
-    Math.floor(
-     Math.random()*3
-    )
-   ];
-
-  p.collected=false;
-
-  p.mesh.visible=true;
- }
-
-
- updateUI();
 }
 
 
-/* =====================================================
-   START
-===================================================== */
-
-function startGame(){
-
- resetGame();
-
- running=true;
-
- startScreen.style.display="none";
-
- gameOver.style.display="none";
-
- showMessage("GO!");
-}
-
-
-document.getElementById(
- "startBtn"
-).addEventListener(
- "click",
- startGame
-);
-
-
-document.getElementById(
- "restartBtn"
-).addEventListener(
- "click",
- startGame
-);
-
-
-/* =====================================================
-   GAME OVER
-===================================================== */
+/* =========================================================
+   END GAME
+========================================================= */
 
 function endGame(){
 
- if(gameEnded)
-  return;
+  if(gameEnded)
+    return;
 
- gameEnded=true;
+  gameEnded=true;
 
- running=false;
+  running=false;
 
- finalScore.textContent=
-  Math.floor(score);
+  paused=false;
 
- finalCoins.textContent=
-  coinCount;
+  fallTimer=0;
 
- gameOver.style.display="flex";
+  pauseScreen.style.display=
+    "none";
+
 }
 
 
-/* =====================================================
-   MAIN UPDATE
-===================================================== */
+/* =========================================================
+   START / RESET
+========================================================= */
 
-let lastTime=
- performance.now();
+function resetGame(){
 
+  score=0;
+  coins=0;
 
-function update(dt){
+  speed=17;
 
- if(!running || paused)
-  return;
+  laneIndex=1;
 
+  laneTween.active=false;
 
- /* speed gradually increases */
+  player.position.set(
+    0,
+    0,
+    5
+  );
 
- speed+=
-  dt*.0032;
+  player.rotation.set(
+    0,
+    0,
+    0
+  );
 
+  player.scale.set(
+    1,1,1
+  );
 
- /* powers */
+  jumpY=0;
+  verticalVelocity=0;
 
- if(magnetTimer>0)
-  magnetTimer-=dt/1000;
+  rolling=false;
+  rollTimer=0;
 
- if(boardTimer>0)
-  boardTimer-=dt/1000;
-
- if(heliTimer>0)
-  heliTimer-=dt/1000;
-
-
- if(magnetTimer<0)
   magnetTimer=0;
-
- if(boardTimer<0)
+  sneakerTimer=0;
   boardTimer=0;
+  jetTimer=0;
 
- if(heliTimer<0)
-  heliTimer=0;
+  gameEnded=false;
+
+  fallTimer=0;
+
+  runTime=0;
 
 
- /* slide */
+  scoreEl.textContent="0";
+  coinEl.textContent="0";
 
- if(sliding){
 
-  slideTimer-=dt/1000;
+  /* trains */
 
-  if(slideTimer<=0){
+  for(
+    let i=0;
+    i<trains.length;
+    i++
+  ){
 
-   slideTimer=0;
+    placeTrain(
+      trains[i],
+      -45-i*58
+    );
 
-   sliding=false;
   }
- }
 
 
- /* lane movement */
+  /* barriers */
 
- player.position.x+=
-  (targetX-player.position.x)
-  *
-  Math.min(
-   1,
-   dt*.018
-  );
+  for(
+    let i=0;
+    i<barriers.length;
+    i++
+  ){
 
+    placeLowBarrier(
+      barriers[i],
+      -100-i*73
+    );
 
- /* world movement */
-
- const movement=
-  speed*
-  (dt/16.67);
+  }
 
 
- for(
-  const t of trains
- ){
+  for(
+    let i=0;
+    i<highBarriers.length;
+    i++
+  ){
 
-  t.mesh.position.z+=
-   movement;
- }
+    placeHighBarrier(
+      highBarriers[i],
+      -135-i*87
+    );
 
-
- for(
-  const o of obstacles
- ){
-
-  o.mesh.position.z+=
-   movement;
- }
+  }
 
 
- for(
-  const c of coinObjects
- ){
+  /* coins */
 
-  if(!c.collected)
-   c.mesh.position.z+=
-    movement;
- }
+  for(
+    let i=0;
+    i<coinPatterns.length;
+    i++
+  ){
 
+    setCoinPattern(
+      coinPatterns[i],
+      -25-i*34
+    );
 
- for(
-  const p of powers
- ){
-
-  if(!p.collected)
-   p.mesh.position.z+=
-    movement;
- }
+  }
 
 
- distance+=movement;
+  /* powers */
 
- score+=
-  movement*.42;
+  for(
+    let i=0;
+    i<powers.length;
+    i++
+  ){
 
+    placePower(
+      powers[i],
+      -80-i*75
+    );
 
- /* updates */
-
- animatePlayer(dt);
-
- updateCoins();
-
- updatePowers();
-
- recycleObjects();
-
- checkCollisions();
-
- updateCamera();
-
- updateUI();
+  }
 
 
- /* message */
+  hoverboard.visible=false;
+  jetpack.visible=false;
 
- if(messageTimer>0){
-
-  messageTimer-=
-   dt/1000;
-
-  if(messageTimer<=0)
-   message.style.display="none";
- }
 }
 
 
-/* =====================================================
-   RESIZE
-===================================================== */
+/* =========================================================
+   START
+========================================================= */
 
-addEventListener(
- "resize",
- ()=>{
+function startGame(){
 
-  camera.aspect=
-   innerWidth/innerHeight;
+  resetGame();
 
-  camera.updateProjectionMatrix();
+  startScreen.style.display=
+    "none";
 
-  renderer.setSize(
-   innerWidth,
-   innerHeight
-  );
+  gameOverScreen.style.display=
+    "none";
 
- }
+  pauseScreen.style.display=
+    "none";
+
+  running=true;
+  paused=false;
+
+  pauseBtn.textContent="Ⅱ";
+
+}
+
+
+/* =========================================================
+   PAUSE
+========================================================= */
+
+function togglePause(){
+
+  if(
+    !running ||
+    gameEnded
+  )
+    return;
+
+  paused=!paused;
+
+  if(paused){
+
+    pauseScreen.style.display=
+      "flex";
+
+    pauseBtn.textContent="▶";
+
+  }
+  else{
+
+    pauseScreen.style.display=
+      "none";
+
+    pauseBtn.textContent="Ⅱ";
+
+  }
+
+}
+
+
+pauseBtn.addEventListener(
+  "click",
+  togglePause
+);
+
+resumeBtn.addEventListener(
+  "click",
+  togglePause
+);
+
+startBtn.addEventListener(
+  "click",
+  startGame
+);
+
+restartBtn.addEventListener(
+  "click",
+  startGame
 );
 
 
-/* =====================================================
-   LOOP
-===================================================== */
+/* =========================================================
+   RESIZE
+========================================================= */
 
-function loop(now){
+addEventListener(
+  "resize",
+  ()=>{
 
- const dt=
-  Math.min(
-   40,
-   now-lastTime
+    camera.aspect=
+      innerWidth/innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+    renderer.setPixelRatio(
+      Math.min(
+        devicePixelRatio,
+        1.5
+      )
+    );
+
+  }
+);
+
+
+/* =========================================================
+   MAIN LOOP
+========================================================= */
+
+let lastTime=
+  performance.now();
+
+
+function animate(now){
+
+  requestAnimationFrame(
+    animate
   );
 
- lastTime=now;
 
- update(dt);
+  const dt=
+    Math.min(
+      .033,
+      (now-lastTime)/1000
+    );
 
- renderer.render(
-  scene,
-  camera
- );
+  lastTime=now;
 
- requestAnimationFrame(
-  loop
- );
+
+  /* game over fall animation */
+
+  if(gameEnded){
+
+    updateFall(dt);
+
+    updateCamera(dt);
+
+    renderer.render(
+      scene,
+      camera
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !running ||
+    paused
+  ){
+
+    renderer.render(
+      scene,
+      camera
+    );
+
+    return;
+
+  }
+
+
+  updateTimers(dt);
+
+  updatePlayer(dt);
+
+  animatePlayer(dt);
+
+  updateTrains(dt);
+
+  updateBarriers(dt);
+
+  updateCoins(dt);
+
+  updatePowers(dt);
+
+  checkTrainCollision();
+
+  if(!gameEnded)
+    checkLowBarrierCollision();
+
+  if(!gameEnded)
+    checkHighBarrierCollision();
+
+  updateScore(dt);
+
+  updateCamera(dt);
+
+
+  if(messageTimer>0){
+
+    messageTimer-=dt;
+
+    if(
+      messageTimer<=0
+    ){
+
+      messageEl.style.display=
+        "none";
+
+    }
+
+  }
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+
 }
 
 
-/* =====================================================
-   LOADING
-===================================================== */
+/* =========================================================
+   LOADING COMPLETE
+========================================================= */
 
-document.getElementById(
- "loading"
-).style.display="none";
+loading.style.display=
+  "none";
 
 
-requestAnimationFrame(loop);
+/* =========================================================
+   START LOOP
+========================================================= */
+
+requestAnimationFrame(
+  animate
+);
 
 </script>
 
