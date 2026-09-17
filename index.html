@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+
 <title>Rail Rush - Real 3D Runner</title>
 
 <style>
@@ -18,7 +19,7 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#68c9ff;
+  background:#69caff;
   font-family:Arial,Helvetica,sans-serif;
   touch-action:none;
 }
@@ -49,7 +50,6 @@ canvas{
   box-shadow:0 7px 20px rgba(0,0,0,.25);
   font-weight:900;
   font-size:22px;
-  letter-spacing:.4px;
 }
 
 #coinBox{
@@ -90,10 +90,9 @@ canvas{
   display:none;
   padding:9px 13px;
   border-radius:18px;
-  color:white;
+  color:#fff;
   background:rgba(8,35,65,.88);
   border:1px solid rgba(255,255,255,.25);
-  box-shadow:0 5px 15px rgba(0,0,0,.25);
   font-size:13px;
   font-weight:900;
 }
@@ -141,7 +140,6 @@ canvas{
 .panel h1{
   font-size:42px;
   margin-bottom:8px;
-  letter-spacing:1px;
 }
 
 .panel h2{
@@ -165,7 +163,6 @@ canvas{
   background:linear-gradient(135deg,#078cff,#1553ff);
   font-size:21px;
   font-weight:900;
-  box-shadow:0 8px 20px rgba(0,100,255,.35);
 }
 
 .small{
@@ -198,41 +195,87 @@ canvas{
 <div id="loading">LOADING 3D WORLD...</div>
 
 <div id="hud">
-  <div class="hudBox">SCORE <span id="score">0</span></div>
-  <div class="hudBox" id="coinBox">🪙 <span id="coins">0</span></div>
+  <div class="hudBox">
+    SCORE <span id="score">0</span>
+  </div>
+
+  <div class="hudBox" id="coinBox">
+    🪙 <span id="coins">0</span>
+  </div>
 </div>
 
 <button id="pause">Ⅱ</button>
 
 <div id="powerBar">
-  <div class="power" id="magnetPower">🧲 MAGNET <span>0</span>s</div>
-  <div class="power" id="sneakerPower">👟 SNEAKERS <span>0</span>s</div>
-  <div class="power" id="boardPower">🛹 BOARD <span>0</span>s</div>
-  <div class="power" id="jetPower">🚀 JETPACK <span>0</span>s</div>
+
+  <div class="power" id="magnetPower">
+    🧲 MAGNET <span>0</span>s
+  </div>
+
+  <div class="power" id="sneakerPower">
+    👟 SNEAKERS <span>0</span>s
+  </div>
+
+  <div class="power" id="boardPower">
+    🛹 BOARD <span>0</span>s
+  </div>
+
+  <div class="power" id="jetPower">
+    🚀 JETPACK <span>0</span>s
+  </div>
+
 </div>
 
 <div id="message"></div>
 
 <div id="startScreen" class="overlay">
+
   <div class="panel">
+
     <h1>RAIL RUSH</h1>
+
     <p>REAL 3D ENDLESS RUNNER</p>
+
     <p>🏃 Your character runs automatically.</p>
+
     <p>Swipe <b>← →</b> to change lane</p>
     <p>Swipe <b>↑</b> to jump</p>
     <p>Swipe <b>↓</b> to roll</p>
-    <button class="startBtn" id="startBtn">START RUN</button>
-    <div class="small">No gameplay control buttons — use the screen.</div>
+
+    <button class="startBtn" id="startBtn">
+      START RUN
+    </button>
+
+    <div class="small">
+      No gameplay control buttons — use the screen.
+    </div>
+
   </div>
+
 </div>
 
 <div id="gameOver" class="overlay hidden">
+
   <div class="panel">
+
     <h2>GAME OVER</h2>
-    <p>Score: <b id="finalScore">0</b></p>
-    <p>Coins: <b id="finalCoins">0</b></p>
-    <button class="startBtn" id="restartBtn">RUN AGAIN</button>
+
+    <p>
+      Score:
+      <b id="finalScore">0</b>
+    </p>
+
+    <p>
+      Coins:
+      <b id="finalCoins">0</b>
+    </p>
+
+    <button class="startBtn" id="restartBtn">
+      RUN AGAIN
+    </button>
+
   </div>
+
 </div>
 
 <script type="importmap">
@@ -247,149 +290,216 @@ canvas{
 
 import * as THREE from "three";
 
+
 /* =========================================================
-   BASIC SETUP
+   SCENE
 ========================================================= */
 
 const scene = new THREE.Scene();
 
-scene.background = new THREE.Color(0x69caff);
+scene.background =
+  new THREE.Color(0x69caff);
 
-scene.fog = new THREE.Fog(
-  0x69caff,
-  45,
-  155
-);
+scene.fog =
+  new THREE.Fog(
+    0x69caff,
+    55,
+    180
+  );
 
-const camera = new THREE.PerspectiveCamera(
-  67,
-  innerWidth / innerHeight,
-  0.1,
-  300
-);
+
+/* =========================================================
+   CAMERA
+   FIXED: CAMERA IS NOW FARTHER FROM PLAYER
+========================================================= */
+
+const camera =
+  new THREE.PerspectiveCamera(
+    62,
+    innerWidth / innerHeight,
+    .1,
+    350
+  );
 
 /*
-   Camera is behind and above the player.
-   The player remains visible near the bottom of screen.
+   IMPORTANT:
+
+   Old:
+   camera z = 9.5
+
+   New:
+   camera z = 15.5
+
+   This gives enough distance to see
+   the COMPLETE BODY.
 */
-camera.position.set(0,4.8,9.5);
 
-const renderer = new THREE.WebGLRenderer({
-  antialias:true,
-  powerPreference:"high-performance"
-});
+camera.position.set(
+  0,
+  4.25,
+  15.5
+);
 
-renderer.setSize(innerWidth,innerHeight);
+
+/* =========================================================
+   RENDERER
+========================================================= */
+
+const renderer =
+  new THREE.WebGLRenderer({
+    antialias:true,
+    powerPreference:"high-performance"
+  });
+
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
 
 renderer.setPixelRatio(
   Math.min(devicePixelRatio,1.5)
 );
 
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=
+  THREE.PCFSoftShadowMap;
 
-renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.outputColorSpace=
+  THREE.SRGBColorSpace;
 
-document.body.appendChild(renderer.domElement);
+document.body.appendChild(
+  renderer.domElement
+);
 
 
 /* =========================================================
-   LIGHTING
+   LIGHT
 ========================================================= */
 
-const hemi = new THREE.HemisphereLight(
-  0xffffff,
-  0x426078,
-  2.1
-);
+const hemi =
+  new THREE.HemisphereLight(
+    0xffffff,
+    0x426078,
+    2.2
+  );
 
 scene.add(hemi);
 
-const sun = new THREE.DirectionalLight(
-  0xffffff,
-  2.5
+const sun =
+  new THREE.DirectionalLight(
+    0xffffff,
+    2.6
+  );
+
+sun.position.set(
+  -25,
+  40,
+  25
 );
 
-sun.position.set(-25,35,20);
-sun.castShadow = true;
+sun.castShadow=true;
 
-sun.shadow.mapSize.width = 1024;
-sun.shadow.mapSize.height = 1024;
+sun.shadow.mapSize.width=1024;
+sun.shadow.mapSize.height=1024;
 
-sun.shadow.camera.left = -35;
-sun.shadow.camera.right = 35;
-sun.shadow.camera.top = 35;
-sun.shadow.camera.bottom = -35;
+sun.shadow.camera.left=-35;
+sun.shadow.camera.right=35;
+sun.shadow.camera.top=35;
+sun.shadow.camera.bottom=-35;
 
 scene.add(sun);
 
 
 /* =========================================================
-   MATERIAL HELPERS
+   MATERIALS
 ========================================================= */
 
-const mat = color =>
+const mat =
+  color =>
   new THREE.MeshStandardMaterial({
     color,
     roughness:.72,
     metalness:.05
   });
 
-const metalMat = color =>
+const metalMat =
+  color =>
   new THREE.MeshStandardMaterial({
     color,
-    roughness:.35,
-    metalness:.75
+    roughness:.32,
+    metalness:.78
   });
 
-const whiteMat = mat(0xffffff);
-const blackMat = mat(0x151922);
-const skinMat = mat(0xffbd91);
-const hairMat = mat(0x24170f);
+const whiteMat=mat(0xffffff);
+const blackMat=mat(0x111722);
+const skinMat=mat(0xffbd91);
+const hairMat=mat(0x24170f);
 
-const blueMat = mat(0x1387e8);
-const jeansMat = mat(0x164a9b);
-const shoeMat = mat(0xffffff);
+const blueMat=mat(0x1387e8);
+const jeansMat=mat(0x164a9b);
+const shoeMat=mat(0xffffff);
 
 
 /* =========================================================
    WORLD
 ========================================================= */
 
-const world = new THREE.Group();
+const world =
+  new THREE.Group();
+
 scene.add(world);
 
-const laneX = [-2.5,0,2.5];
+const laneX=[
+  -2.5,
+  0,
+  2.5
+];
 
-const TRACK_LENGTH = 420;
+const TRACK_LENGTH=420;
 
 
-/* Grass */
+/* =========================================================
+   GROUND
+========================================================= */
 
-const grass = new THREE.Mesh(
-  new THREE.BoxGeometry(38,.5,TRACK_LENGTH),
-  mat(0x4eaf55)
-);
+const grass =
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      38,
+      .5,
+      TRACK_LENGTH
+    ),
+    mat(0x4eaf55)
+  );
 
 grass.position.set(
-  0,-.52,-TRACK_LENGTH/2+15
+  0,
+  -.52,
+  -TRACK_LENGTH/2+15
 );
 
-grass.receiveShadow = true;
+grass.receiveShadow=true;
 
 world.add(grass);
 
 
-/* Railway beds */
+/* =========================================================
+   TRACKS
+========================================================= */
 
-for(let lane=0; lane<3; lane++){
+for(let lane=0;lane<3;lane++){
 
-  const x = laneX[lane];
+  const x=laneX[lane];
 
-  const bed = new THREE.Mesh(
-    new THREE.BoxGeometry(3.7,.18,TRACK_LENGTH),
-    mat(0x493d3a)
-  );
+  const bed =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        3.7,
+        .18,
+        TRACK_LENGTH
+      ),
+      mat(0x493d3a)
+    );
 
   bed.position.set(
     x,
@@ -397,19 +507,22 @@ for(let lane=0; lane<3; lane++){
     -TRACK_LENGTH/2+15
   );
 
-  bed.receiveShadow = true;
+  bed.receiveShadow=true;
 
   world.add(bed);
 
 
-  /* Rails */
-
   [-1.02,1.02].forEach(offset=>{
 
-    const rail = new THREE.Mesh(
-      new THREE.BoxGeometry(.14,.20,TRACK_LENGTH),
-      metalMat(0xcbd4db)
-    );
+    const rail =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          .14,
+          .20,
+          TRACK_LENGTH
+        ),
+        metalMat(0xcbd4db)
+      );
 
     rail.position.set(
       x+offset,
@@ -417,21 +530,34 @@ for(let lane=0; lane<3; lane++){
       -TRACK_LENGTH/2+15
     );
 
-    rail.castShadow = true;
-    rail.receiveShadow = true;
+    rail.receiveShadow=true;
 
     world.add(rail);
+
   });
 
 
-  /* Sleepers */
+  /*
+     Sleepers spaced farther apart.
+     This prevents the road looking like
+     hundreds of objects are spawning.
+  */
 
-  for(let z=0;z>-TRACK_LENGTH;z-=2.4){
+  for(
+    let z=0;
+    z>-TRACK_LENGTH;
+    z-=3.2
+  ){
 
-    const sleeper = new THREE.Mesh(
-      new THREE.BoxGeometry(3.45,.20,.48),
-      mat(0x613a29)
-    );
+    const sleeper =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          3.45,
+          .20,
+          .50
+        ),
+        mat(0x613a29)
+      );
 
     sleeper.position.set(
       x,
@@ -439,27 +565,29 @@ for(let lane=0; lane<3; lane++){
       z
     );
 
-    sleeper.receiveShadow = true;
+    sleeper.receiveShadow=true;
 
     world.add(sleeper);
   }
+
 }
 
 
 /* =========================================================
-   SIDE WALK / PLATFORM
+   SIDE PLATFORMS
 ========================================================= */
 
-for(const x of [-6.0,6.0]){
+for(const x of [-6,6]){
 
-  const platform = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      2.4,
-      .35,
-      TRACK_LENGTH
-    ),
-    mat(0x747b86)
-  );
+  const platform =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.4,
+        .35,
+        TRACK_LENGTH
+      ),
+      mat(0x747b86)
+    );
 
   platform.position.set(
     x,
@@ -472,10 +600,11 @@ for(const x of [-6.0,6.0]){
 
 
 /* =========================================================
-   CITY BUILDINGS
+   BUILDINGS
+   LESS FREQUENT
 ========================================================= */
 
-const buildingColors = [
+const buildingColors=[
   0xe84d48,
   0x287ec4,
   0xf0b72d,
@@ -487,23 +616,35 @@ const buildingColors = [
 
 function addBuilding(x,z){
 
-  const width = 3.2 + Math.random()*1.6;
-  const height = 7 + Math.random()*11;
-  const depth = 4 + Math.random()*2;
+  const width=
+    3.2+
+    Math.random()*1.6;
 
-  const color =
+  const height=
+    7+
+    Math.random()*11;
+
+  const depth=
+    4+
+    Math.random()*2;
+
+  const color=
     buildingColors[
-      Math.floor(Math.random()*buildingColors.length)
+      Math.floor(
+        Math.random()*
+        buildingColors.length
+      )
     ];
 
-  const building = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      width,
-      height,
-      depth
-    ),
-    mat(color)
-  );
+  const building=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        width,
+        height,
+        depth
+      ),
+      mat(color)
+    );
 
   building.position.set(
     x,
@@ -511,22 +652,21 @@ function addBuilding(x,z){
     z
   );
 
-  building.castShadow = true;
-  building.receiveShadow = true;
+  building.castShadow=true;
+  building.receiveShadow=true;
 
   world.add(building);
 
 
-  /* roof */
-
-  const roof = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      width+.12,
-      .22,
-      depth+.12
-    ),
-    blackMat
-  );
+  const roof=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        width+.12,
+        .22,
+        depth+.12
+      ),
+      blackMat
+    );
 
   roof.position.set(
     x,
@@ -537,12 +677,10 @@ function addBuilding(x,z){
   world.add(roof);
 
 
-  /* windows */
-
   for(
     let wy=1.7;
     wy<height-1;
-    wy+=2.2
+    wy+=2.4
   ){
 
     for(
@@ -551,18 +689,19 @@ function addBuilding(x,z){
       wx+=.9
     ){
 
-      const windowMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(
-          .32,
-          .48,
-          .035
-        ),
-        mat(
-          Math.random()>.25
-          ? 0xffef91
-          : 0x9bdcff
-        )
-      );
+      const windowMesh=
+        new THREE.Mesh(
+          new THREE.BoxGeometry(
+            .32,
+            .48,
+            .035
+          ),
+          mat(
+            Math.random()>.25
+            ? 0xffef91
+            : 0x9bdcff
+          )
+        );
 
       windowMesh.position.set(
         x+wx,
@@ -576,7 +715,16 @@ function addBuilding(x,z){
 }
 
 
-for(let z=5;z>-390;z-=8){
+/*
+   OLD: every 8 units
+   NEW: every 18 units
+*/
+
+for(
+  let z=5;
+  z>-390;
+  z-=18
+){
 
   addBuilding(
     -8.1-Math.random()*1.2,
@@ -585,7 +733,7 @@ for(let z=5;z>-390;z-=8){
 
   addBuilding(
     8.1+Math.random()*1.2,
-    z-3
+    z-8
   );
 }
 
@@ -596,18 +744,35 @@ for(let z=5;z>-390;z-=8){
 
 function addStreetLight(x,z){
 
-  const pole = new THREE.Mesh(
-    new THREE.CylinderGeometry(.055,.075,3.4,8),
-    blackMat
+  const pole=
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .055,
+        .075,
+        3.4,
+        8
+      ),
+      blackMat
+    );
+
+  pole.position.set(
+    x,
+    1.6,
+    z
   );
 
-  pole.position.set(x,1.6,z);
   world.add(pole);
 
-  const arm = new THREE.Mesh(
-    new THREE.BoxGeometry(.65,.06,.06),
-    blackMat
-  );
+
+  const arm=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .65,
+        .06,
+        .06
+      ),
+      blackMat
+    );
 
   arm.position.set(
     x+(x<0?.3:-.3),
@@ -617,10 +782,16 @@ function addStreetLight(x,z){
 
   world.add(arm);
 
-  const lamp = new THREE.Mesh(
-    new THREE.SphereGeometry(.13,8,8),
-    mat(0xffe76c)
-  );
+
+  const lamp=
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .13,
+        8,
+        8
+      ),
+      mat(0xffe76c)
+    );
 
   lamp.position.set(
     x+(x<0?.6:-.6),
@@ -631,10 +802,19 @@ function addStreetLight(x,z){
   world.add(lamp);
 }
 
-for(let z=0;z>-390;z-=8){
+
+for(
+  let z=0;
+  z>-390;
+  z-=22
+){
 
   addStreetLight(-5.15,z);
-  addStreetLight(5.15,z-4);
+
+  addStreetLight(
+    5.15,
+    z-11
+  );
 }
 
 
@@ -642,62 +822,91 @@ for(let z=0;z>-390;z-=8){
    PLAYER
 ========================================================= */
 
-const player = new THREE.Group();
+const player =
+  new THREE.Group();
 
 player.position.set(
   0,
   0,
-  6
+  5
 );
 
 scene.add(player);
 
 
 /*
-   We build the character from MANY meshes.
-   This makes it look like a cartoon person,
-   not a Minecraft box.
+   Character is intentionally smaller
+   relative to camera.
 */
 
-const character = new THREE.Group();
+const character =
+  new THREE.Group();
+
+character.scale.set(
+  .88,
+  .88,
+  .88
+);
+
 player.add(character);
 
 
-/* pelvis */
+/* =========================================================
+   PELVIS
+========================================================= */
 
-const pelvis = new THREE.Mesh(
-  new THREE.BoxGeometry(.72,.42,.48),
-  jeansMat
-);
+const pelvis=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .72,
+      .42,
+      .48
+    ),
+    jeansMat
+  );
 
-pelvis.position.y = 1.02;
+pelvis.position.y=1.02;
+
+pelvis.castShadow=true;
+
 character.add(pelvis);
 
 
-/* torso */
+/* =========================================================
+   TORSO
+========================================================= */
 
-const torso = new THREE.Mesh(
-  new THREE.CylinderGeometry(
-    .48,
-    .58,
-    1.05,
-    10
-  ),
-  blueMat
-);
+const torso=
+  new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .48,
+      .58,
+      1.05,
+      12
+    ),
+    blueMat
+  );
 
-torso.scale.z = .72;
-torso.position.y = 1.63;
-torso.castShadow = true;
+torso.scale.z=.72;
+
+torso.position.y=1.63;
+
+torso.castShadow=true;
+
 character.add(torso);
 
 
-/* shirt front */
+/* shirt detail */
 
-const shirtFront = new THREE.Mesh(
-  new THREE.BoxGeometry(.63,.58,.04),
-  mat(0x20a9ef)
-);
+const shirtFront=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .63,
+      .58,
+      .04
+    ),
+    mat(0x20a9ef)
+  );
 
 shirtFront.position.set(
   0,
@@ -708,27 +917,35 @@ shirtFront.position.set(
 character.add(shirtFront);
 
 
-/* neck */
+/* =========================================================
+   NECK + HEAD
+========================================================= */
 
-const neck = new THREE.Mesh(
-  new THREE.CylinderGeometry(.18,.20,.22,10),
-  skinMat
-);
+const neck=
+  new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .18,
+      .20,
+      .22,
+      10
+    ),
+    skinMat
+  );
 
-neck.position.y = 2.20;
+neck.position.y=2.20;
+
 character.add(neck);
 
 
-/* head */
-
-const head = new THREE.Mesh(
-  new THREE.SphereGeometry(
-    .53,
-    20,
-    16
-  ),
-  skinMat
-);
+const head=
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .53,
+      24,
+      18
+    ),
+    skinMat
+  );
 
 head.scale.set(
   .94,
@@ -736,26 +953,30 @@ head.scale.set(
   .90
 );
 
-head.position.y = 2.62;
-head.castShadow = true;
+head.position.y=2.62;
+
+head.castShadow=true;
 
 character.add(head);
 
 
-/* hair */
+/* =========================================================
+   HAIR
+========================================================= */
 
-const hair = new THREE.Mesh(
-  new THREE.SphereGeometry(
-    .55,
-    18,
-    10,
-    0,
-    Math.PI*2,
-    0,
-    Math.PI*.55
-  ),
-  hairMat
-);
+const hair=
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .55,
+      20,
+      12,
+      0,
+      Math.PI*2,
+      0,
+      Math.PI*.55
+    ),
+    hairMat
+  );
 
 hair.position.set(
   0,
@@ -766,20 +987,23 @@ hair.position.set(
 character.add(hair);
 
 
-/* cap crown */
+/* =========================================================
+   CAP
+========================================================= */
 
-const cap = new THREE.Mesh(
-  new THREE.SphereGeometry(
-    .58,
-    18,
-    10,
-    0,
-    Math.PI*2,
-    0,
-    Math.PI*.48
-  ),
-  mat(0x1465e8)
-);
+const cap=
+  new THREE.Mesh(
+    new THREE.SphereGeometry(
+      .58,
+      20,
+      12,
+      0,
+      Math.PI*2,
+      0,
+      Math.PI*.48
+    ),
+    mat(0x1465e8)
+  );
 
 cap.scale.set(
   1.04,
@@ -796,16 +1020,15 @@ cap.position.set(
 character.add(cap);
 
 
-/* cap visor */
-
-const visor = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    .68,
-    .10,
-    .42
-  ),
-  mat(0x0e4db8)
-);
+const visor=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .68,
+      .10,
+      .42
+    ),
+    mat(0x0e4db8)
+  );
 
 visor.position.set(
   0,
@@ -813,207 +1036,306 @@ visor.position.set(
   -.48
 );
 
-visor.rotation.x = -.12;
+visor.rotation.x=-.12;
 
 character.add(visor);
 
 
 /* =========================================================
-   LIMBS
+   ARMS
 ========================================================= */
 
 function createArm(side){
 
-  const armGroup = new THREE.Group();
+  /*
+     Shoulder is the pivot.
+     This makes the arm swing naturally.
+  */
 
-  armGroup.position.set(
+  const arm=
+    new THREE.Group();
+
+  arm.position.set(
     side*.55,
     1.93,
     0
   );
 
-  character.add(armGroup);
+  character.add(arm);
 
 
-  const upper = new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      .16,
-      .18,
-      .58,
-      10
-    ),
-    blueMat
-  );
+  const upper=
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .16,
+        .18,
+        .58,
+        10
+      ),
+      blueMat
+    );
 
-  upper.position.y = -.28;
-  upper.rotation.z = side*.12;
+  upper.position.y=-.29;
 
-  armGroup.add(upper);
-
-
-  const elbow = new THREE.Group();
-
-  elbow.position.y = -.58;
-  armGroup.add(elbow);
+  arm.add(upper);
 
 
-  const lower = new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      .14,
-      .16,
-      .52,
-      10
-    ),
-    skinMat
-  );
+  const elbow=
+    new THREE.Group();
 
-  lower.position.y = -.25;
+  elbow.position.y=-.58;
+
+  arm.add(elbow);
+
+
+  const lower=
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .14,
+        .16,
+        .52,
+        10
+      ),
+      skinMat
+    );
+
+  lower.position.y=-.25;
 
   elbow.add(lower);
 
 
-  const hand = new THREE.Mesh(
-    new THREE.SphereGeometry(
-      .17,
-      12,
-      10
-    ),
-    skinMat
-  );
+  const hand=
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        .17,
+        12,
+        10
+      ),
+      skinMat
+    );
 
-  hand.position.y = -.54;
+  hand.position.y=-.54;
 
   elbow.add(hand);
 
 
-  return armGroup;
+  return {
+    group:arm,
+    elbow
+  };
 }
 
-const leftArm = createArm(-1);
-const rightArm = createArm(1);
+
+const leftArmData=
+  createArm(-1);
+
+const rightArmData=
+  createArm(1);
+
+const leftArm=
+  leftArmData.group;
+
+const rightArm=
+  rightArmData.group;
 
 
-/* legs */
+/* =========================================================
+   LEGS
+========================================================= */
 
 function createLeg(side){
 
-  const legGroup = new THREE.Group();
+  const leg=
+    new THREE.Group();
 
-  legGroup.position.set(
+  /*
+     Hip pivot.
+  */
+
+  leg.position.set(
     side*.23,
     .95,
     0
   );
 
-  character.add(legGroup);
+  character.add(leg);
 
 
-  const thigh = new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      .18,
-      .20,
-      .62,
-      10
-    ),
-    jeansMat
-  );
+  const thigh=
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .18,
+        .20,
+        .62,
+        10
+      ),
+      jeansMat
+    );
 
-  thigh.position.y = -.31;
+  thigh.position.y=-.31;
 
-  legGroup.add(thigh);
+  thigh.castShadow=true;
 
-
-  const knee = new THREE.Group();
-
-  knee.position.y = -.63;
-
-  legGroup.add(knee);
+  leg.add(thigh);
 
 
-  const shin = new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      .145,
-      .16,
-      .62,
-      10
-    ),
-    jeansMat
-  );
+  const knee=
+    new THREE.Group();
 
-  shin.position.y = -.30;
+  knee.position.y=-.63;
+
+  leg.add(knee);
+
+
+  const shin=
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .145,
+        .16,
+        .62,
+        10
+      ),
+      jeansMat
+    );
+
+  shin.position.y=-.30;
+
+  shin.castShadow=true;
 
   knee.add(shin);
 
 
-  const shoe = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      .40,
-      .20,
-      .65
-    ),
-    shoeMat
-  );
+  /*
+     Shoe points slightly forward.
+  */
+
+  const shoe=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .40,
+        .20,
+        .70
+      ),
+      shoeMat
+    );
 
   shoe.position.set(
     0,
     -.65,
-    -.14
+    -.18
   );
 
-  shoe.castShadow = true;
+  shoe.castShadow=true;
 
   knee.add(shoe);
 
 
-  return legGroup;
+  return {
+    group:leg,
+    knee
+  };
 }
 
-const leftLeg = createLeg(-1);
-const rightLeg = createLeg(1);
+
+const leftLegData=
+  createLeg(-1);
+
+const rightLegData=
+  createLeg(1);
+
+const leftLeg=
+  leftLegData.group;
+
+const rightLeg=
+  rightLegData.group;
+
+const leftKnee=
+  leftLegData.knee;
+
+const rightKnee=
+  rightLegData.knee;
 
 
 /* =========================================================
-   RUN ANIMATION
+   RUNNING ANIMATION
 ========================================================= */
 
-let runTime = 0;
+let runTime=0;
 
 function updateRunningAnimation(dt){
 
-  if(!gameRunning) return;
+  runTime+=dt*11.5;
 
-  runTime += dt * 12;
+  const s=
+    Math.sin(runTime);
 
-  const s = Math.sin(runTime);
-  const c = Math.cos(runTime);
+  const s2=
+    Math.sin(runTime+Math.PI);
+
 
   /*
-     Opposite arms and legs.
-     This is the important part that makes
-     the character look like he is ACTUALLY RUNNING.
+     LEGS
+
+     One leg forward
+     One leg backward
   */
 
-  leftLeg.rotation.x = s * .72;
-  rightLeg.rotation.x = -s * .72;
+  leftLeg.rotation.x=
+    s*.90;
 
-  leftArm.rotation.x = -s * .62;
-  rightArm.rotation.x = s * .62;
+  rightLeg.rotation.x=
+    s2*.90;
 
-  /* knees bend naturally */
 
-  leftLeg.children[1].rotation.x =
-    Math.max(0,s) * .38;
+  /*
+     Knees bend during running.
+  */
 
-  rightLeg.children[1].rotation.x =
-    Math.max(0,-s) * .38;
+  leftKnee.rotation.x=
+    Math.max(0,-s)*.55;
 
-  /* body bounce */
+  rightKnee.rotation.x=
+    Math.max(0,-s2)*.55;
 
-  character.position.y =
-    Math.abs(Math.sin(runTime*2)) * .055;
 
-  character.rotation.z =
-    Math.sin(runTime) * .025;
+  /*
+     ARMS move opposite to legs.
+  */
+
+  leftArm.rotation.x=
+    -s*.72;
+
+  rightArm.rotation.x=
+    s*.72;
+
+
+  /*
+     Slight elbow movement.
+  */
+
+  leftArmData.elbow.rotation.x=
+    Math.max(0,s)*.22;
+
+  rightArmData.elbow.rotation.x=
+    Math.max(0,s2)*.22;
+
+
+  /*
+     Natural body bounce.
+  */
+
+  character.position.y=
+    Math.abs(
+      Math.sin(runTime*2)
+    )*.045;
+
+
+  /*
+     Tiny side movement.
+  */
+
+  character.rotation.z=
+    Math.sin(runTime)*.025;
 }
 
 
@@ -1021,34 +1343,49 @@ function updateRunningAnimation(dt){
    HOVERBOARD
 ========================================================= */
 
-const board = new THREE.Group();
+const board=
+  new THREE.Group();
 
-const boardBody = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    1.35,
-    .12,
-    .45
-  ),
-  mat(0xff4b22)
-);
+const boardBody=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      1.35,
+      .12,
+      .45
+    ),
+    mat(0xff4b22)
+  );
 
-boardBody.rotation.z = -.04;
+boardBody.rotation.z=-.04;
+
 board.add(boardBody);
 
-const boardLight1 = new THREE.Mesh(
-  new THREE.BoxGeometry(.22,.05,.22),
-  mat(0x4beaff)
-);
 
-boardLight1.position.x = -.45;
+const boardLight1=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .22,
+      .05,
+      .22
+    ),
+    mat(0x4beaff)
+  );
+
+boardLight1.position.x=-.45;
+
 board.add(boardLight1);
 
-const boardLight2 = boardLight1.clone();
-boardLight2.position.x = .45;
+
+const boardLight2=
+  boardLight1.clone();
+
+boardLight2.position.x=.45;
+
 board.add(boardLight2);
 
-board.position.y = .20;
-board.visible = false;
+board.position.y=.20;
+
+board.visible=false;
 
 player.add(board);
 
@@ -1057,16 +1394,18 @@ player.add(board);
    JETPACK
 ========================================================= */
 
-const jetpack = new THREE.Group();
+const jetpack=
+  new THREE.Group();
 
-const packBody = new THREE.Mesh(
-  new THREE.BoxGeometry(
-    .55,
-    .75,
-    .30
-  ),
-  mat(0x4b5563)
-);
+const packBody=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .55,
+      .75,
+      .30
+    ),
+    mat(0x4b5563)
+  );
 
 packBody.position.set(
   0,
@@ -1076,14 +1415,19 @@ packBody.position.set(
 
 jetpack.add(packBody);
 
+
 for(const side of [-1,1]){
 
-  const tank = new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      .11,.13,.65,10
-    ),
-    metalMat(0xb8c1cc)
-  );
+  const tank=
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        .11,
+        .13,
+        .65,
+        10
+      ),
+      metalMat(0xb8c1cc)
+    );
 
   tank.position.set(
     side*.28,
@@ -1094,14 +1438,17 @@ for(const side of [-1,1]){
   jetpack.add(tank);
 
 
-  const flame = new THREE.Mesh(
-    new THREE.ConeGeometry(
-      .10,.42,8
-    ),
-    mat(0xff7a00)
-  );
+  const flame=
+    new THREE.Mesh(
+      new THREE.ConeGeometry(
+        .10,
+        .42,
+        8
+      ),
+      mat(0xff7a00)
+    );
 
-  flame.rotation.x = Math.PI;
+  flame.rotation.x=Math.PI;
 
   flame.position.set(
     side*.28,
@@ -1112,7 +1459,8 @@ for(const side of [-1,1]){
   jetpack.add(flame);
 }
 
-jetpack.visible = false;
+jetpack.visible=false;
+
 player.add(jetpack);
 
 
@@ -1120,9 +1468,9 @@ player.add(jetpack);
    TRAINS
 ========================================================= */
 
-const trains = [];
+const trains=[];
 
-const trainColors = [
+const trainColors=[
   0xd82f36,
   0x1976d2,
   0xf0b323,
@@ -1130,297 +1478,438 @@ const trainColors = [
   0x823bb0
 ];
 
-function createTrain(lane,z,color){
 
-  const train = new THREE.Group();
+function createTrain(
+  lane,
+  z,
+  color
+){
+
+  const train=
+    new THREE.Group();
+
 
   /*
-     Long body — much bigger than player.
+     REALISTIC PROPORTION:
+
+     Width  = 2.65
+     Height = 3.4
+     Length = 10
+
+     So train is clearly larger
+     than the player.
   */
 
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      3.35,
-      3.15,
-      8.5
-    ),
-    mat(color)
-  );
+  const body=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.65,
+        3.25,
+        9.6
+      ),
+      mat(color)
+    );
 
-  body.position.y = 1.65;
-  body.castShadow = true;
-  body.receiveShadow = true;
+  body.position.y=1.68;
+
+  body.castShadow=true;
+  body.receiveShadow=true;
 
   train.add(body);
 
 
-  /* rounded/slanted front */
+  /*
+     Lower chassis
+  */
 
-  const front = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      3.05,
-      2.35,
-      .35
-    ),
-    mat(color)
-  );
+  const chassis=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.75,
+        .45,
+        9.8
+      ),
+      blackMat
+    );
 
-  front.position.set(
+  chassis.position.y=.42;
+
+  train.add(chassis);
+
+
+  /*
+     Roof
+  */
+
+  const roof=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.78,
+        .30,
+        9.85
+      ),
+      blackMat
+    );
+
+  roof.position.y=3.35;
+
+  train.add(roof);
+
+
+  /*
+     Roof equipment
+  */
+
+  const roofUnit=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        1.1,
+        .30,
+        1.8
+      ),
+      mat(0x39434d)
+    );
+
+  roofUnit.position.y=3.62;
+
+  train.add(roofUnit);
+
+
+  /*
+     Front nose
+  */
+
+  const nose=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.50,
+        2.50,
+        .35
+      ),
+      mat(color)
+    );
+
+  nose.position.set(
     0,
-    1.55,
-    4.28
+    1.52,
+    4.95
   );
 
-  front.rotation.x = -.03;
-
-  train.add(front);
+  train.add(nose);
 
 
-  /* windshield */
+  /*
+     Front windshield
+  */
 
-  const windshield = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      2.15,
-      1.05,
-      .08
-    ),
-    mat(0x83dcff)
-  );
+  const windshield=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        1.75,
+        .92,
+        .08
+      ),
+      mat(0x8edfff)
+    );
 
   windshield.position.set(
     0,
-    2.25,
-    4.48
+    2.28,
+    5.14
   );
 
   train.add(windshield);
 
 
-  /* windshield frame */
+  /*
+     Windshield center divider
+  */
 
-  for(const x of [-1.13,1.13]){
-
-    const frame = new THREE.Mesh(
+  const divider=
+    new THREE.Mesh(
       new THREE.BoxGeometry(
-        .11,
-        1.20,
-        .12
+        .09,
+        1.0,
+        .10
       ),
       blackMat
     );
 
-    frame.position.set(
-      x,
-      2.25,
-      4.51
-    );
-
-    train.add(frame);
-  }
-
-
-  /* side windows */
-
-  for(const side of [-1,1]){
-
-    for(let z2=-3.2;z2<=2.7;z2+=1.35){
-
-      const win = new THREE.Mesh(
-        new THREE.BoxGeometry(
-          .07,
-          1.0,
-          .78
-        ),
-        mat(0x9be8ff)
-      );
-
-      win.position.set(
-        side*1.71,
-        2.12,
-        z2
-      );
-
-      train.add(win);
-
-
-      const windowFrame = new THREE.Mesh(
-        new THREE.BoxGeometry(
-          .09,
-          1.13,
-          .88
-        ),
-        blackMat
-      );
-
-      windowFrame.position.set(
-        side*1.70,
-        2.12,
-        z2
-      );
-
-      /*
-         Frame behind window.
-      */
-
-      train.add(windowFrame);
-      win.position.x += -side*.06;
-    }
-  }
-
-
-  /* doors */
-
-  for(const side of [-1,1]){
-
-    const door = new THREE.Mesh(
-      new THREE.BoxGeometry(
-        .08,
-        1.9,
-        .9
-      ),
-      mat(0x3d5364)
-    );
-
-    door.position.set(
-      side*1.72,
-      1.15,
-      -.15
-    );
-
-    train.add(door);
-  }
-
-
-  /* roof */
-
-  const roof = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      3.55,
-      .30,
-      8.8
-    ),
-    blackMat
+  divider.position.set(
+    0,
+    2.28,
+    5.19
   );
 
-  roof.position.y = 3.28;
-
-  train.add(roof);
+  train.add(divider);
 
 
-  /* roof equipment */
-
-  const roofUnit = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      1.3,
-      .28,
-      1.7
-    ),
-    mat(0x39434d)
-  );
-
-  roofUnit.position.y = 3.55;
-
-  train.add(roofUnit);
-
-
-  /* headlights */
+  /*
+     Front headlights
+  */
 
   for(const x of [-.82,.82]){
 
-    const lamp = new THREE.Mesh(
-      new THREE.CylinderGeometry(
-        .19,.19,.10,16
-      ),
-      mat(0xfff5a8)
-    );
+    const lamp=
+      new THREE.Mesh(
+        new THREE.CylinderGeometry(
+          .20,
+          .20,
+          .10,
+          16
+        ),
+        mat(0xfff6a8)
+      );
 
-    lamp.rotation.x = Math.PI/2;
+    lamp.rotation.x=
+      Math.PI/2;
 
     lamp.position.set(
       x,
-      1.15,
-      4.52
+      1.18,
+      5.18
     );
 
     train.add(lamp);
   }
 
 
-  /* bumper */
+  /*
+     Red lower bumper
+  */
 
-  const bumper = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      2.8,
-      .28,
-      .25
-    ),
-    metalMat(0x858d96)
-  );
+  const bumper=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.45,
+        .28,
+        .25
+      ),
+      metalMat(0x858d96)
+    );
 
   bumper.position.set(
     0,
     .45,
-    4.48
+    5.12
   );
 
   train.add(bumper);
 
 
-  /* graffiti style decoration */
+  /*
+     SIDE WINDOWS
+  */
 
-  const graffitiColors = [
+  for(const side of [-1,1]){
+
+    for(
+      let z2=-3.7;
+      z2<=3.0;
+      z2+=1.45
+    ){
+
+      /*
+         Frame first
+      */
+
+      const frame=
+        new THREE.Mesh(
+          new THREE.BoxGeometry(
+            .09,
+            1.18,
+            .95
+          ),
+          blackMat
+        );
+
+      frame.position.set(
+        side*1.335,
+        2.15,
+        z2
+      );
+
+      train.add(frame);
+
+
+      /*
+         Glass slightly outside frame
+      */
+
+      const win=
+        new THREE.Mesh(
+          new THREE.BoxGeometry(
+            .055,
+            .92,
+            .72
+          ),
+          mat(0x9be8ff)
+        );
+
+      win.position.set(
+        side*1.39,
+        2.15,
+        z2
+      );
+
+      train.add(win);
+    }
+  }
+
+
+  /*
+     SIDE DOORS
+  */
+
+  for(const side of [-1,1]){
+
+    const doorFrame=
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          .10,
+          2.05,
+          1.0
+        ),
+        blackMat
+      );
+
+    doorFrame.position.set(
+      side*1.36,
+      1.18,
+      -.25
+    );
+
+    train.add(doorFrame);
+
+
+    const door=
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          .055,
+          1.80,
+          .82
+        ),
+        mat(0x3d5364)
+      );
+
+    door.position.set(
+      side*1.41,
+      1.18,
+      -.25
+    );
+
+    train.add(door);
+  }
+
+
+  /*
+     COLOR STRIPE
+  */
+
+  const stripe=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.72,
+        .22,
+        9.72
+      ),
+      mat(0xffffff)
+    );
+
+  stripe.position.y=1.05;
+
+  train.add(stripe);
+
+
+  /*
+     Graffiti blocks on both sides
+  */
+
+  const graffitiColors=[
     0xff36a8,
     0x27e8ff,
     0xffd32a,
     0x7dff48
   ];
 
-  for(let i=0;i<5;i++){
+  for(const side of [-1,1]){
 
-    const stripe = new THREE.Mesh(
-      new THREE.BoxGeometry(
-        .07,
-        .18,
-        .75
-      ),
-      mat(
-        graffitiColors[
-          i%graffitiColors.length
-        ]
-      )
-    );
+    for(let i=0;i<5;i++){
 
-    stripe.position.set(
-      1.73,
-      .85+i*.27,
-      -2.5+i*.85
-    );
+      const g=
+        new THREE.Mesh(
+          new THREE.BoxGeometry(
+            .07,
+            .18,
+            .75
+          ),
+          mat(
+            graffitiColors[
+              i%graffitiColors.length
+            ]
+          )
+        );
 
-    stripe.rotation.z =
-      (i%2 ? -.35 : .35);
+      g.position.set(
+        side*1.42,
+        .72+i*.22,
+        -3+i*1.15
+      );
 
-    train.add(stripe);
+      g.rotation.z=
+        i%2 ? -.35 : .35;
+
+      train.add(g);
+    }
   }
 
 
-  /* wheel assemblies */
+  /*
+     WHEELS + BOGIES
+  */
 
   for(const side of [-1,1]){
 
-    for(const z2 of [-2.7,2.7]){
+    for(
+      const z2 of [-3.15,3.15]
+    ){
 
-      const wheel = new THREE.Mesh(
-        new THREE.CylinderGeometry(
-          .42,.42,.20,12
-        ),
-        blackMat
+      const bogie=
+        new THREE.Mesh(
+          new THREE.BoxGeometry(
+            .55,
+            .28,
+            1.35
+          ),
+          blackMat
+        );
+
+      bogie.position.set(
+        side*1.22,
+        .30,
+        z2
       );
 
-      wheel.rotation.z = Math.PI/2;
+      train.add(bogie);
+
+
+      const wheel=
+        new THREE.Mesh(
+          new THREE.CylinderGeometry(
+            .43,
+            .43,
+            .18,
+            14
+          ),
+          blackMat
+        );
+
+      wheel.rotation.z=
+        Math.PI/2;
 
       wheel.position.set(
-        side*1.75,
-        .35,
+        side*1.42,
+        .30,
         z2
       );
 
@@ -1442,14 +1931,16 @@ function createTrain(lane,z,color){
 
 
 /*
-   Trains are spaced far enough apart.
+   Large gaps between trains.
 */
 
-for(let i=0;i<9;i++){
+for(let i=0;i<8;i++){
 
   createTrain(
-    Math.floor(Math.random()*3),
-    -42-i*42,
+    Math.floor(
+      Math.random()*3
+    ),
+    -55-i*52,
     trainColors[
       i%trainColors.length
     ]
@@ -1461,47 +1952,69 @@ for(let i=0;i<9;i++){
    OBSTACLES
 ========================================================= */
 
-const obstacles = [];
+const obstacles=[];
 
-function createLowBarrier(lane,z){
 
-  const g = new THREE.Group();
+function createLowBarrier(
+  lane,
+  z
+){
 
-  const postMat = mat(0xf1f1f1);
-  const red = mat(0xed2424);
+  const g=
+    new THREE.Group();
 
-  for(const x of [-1.0,1.0]){
+  const red=
+    mat(0xed2424);
 
-    const post = new THREE.Mesh(
-      new THREE.BoxGeometry(.16,1.35,.18),
-      postMat
+
+  for(const x of [-1,1]){
+
+    const post=
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          .16,
+          1.35,
+          .18
+        ),
+        whiteMat
+      );
+
+    post.position.set(
+      x,
+      .67,
+      0
     );
 
-    post.position.set(x,.67,0);
     g.add(post);
   }
 
-  const bar = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      2.45,
-      .52,
-      .25
-    ),
-    red
-  );
 
-  bar.position.y = 1.18;
+  const bar=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.45,
+        .52,
+        .25
+      ),
+      red
+    );
+
+  bar.position.y=1.18;
+
   g.add(bar);
 
 
   for(let i=-2;i<=2;i++){
 
-    const stripe = new THREE.Mesh(
-      new THREE.BoxGeometry(
-        .30,.54,.28
-      ),
-      whiteMat
-    );
+    const stripe=
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          .30,
+          .54,
+          .28
+        ),
+        whiteMat
+      );
 
     stripe.position.set(
       i*.50,
@@ -1509,11 +2022,12 @@ function createLowBarrier(lane,z){
       -.01
     );
 
-    stripe.rotation.z =
+    stripe.rotation.z=
       i%2 ? -.25 : .25;
 
     g.add(stripe);
   }
+
 
   g.userData.type="low";
 
@@ -1524,41 +2038,49 @@ function createLowBarrier(lane,z){
   );
 
   world.add(g);
+
   obstacles.push(g);
 }
 
 
-function createHighBarrier(lane,z){
+function createHighBarrier(
+  lane,
+  z
+){
 
-  const g = new THREE.Group();
+  const g=
+    new THREE.Group();
 
-  const red = mat(0xe92626);
+  const red=
+    mat(0xe92626);
 
-  const bar = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      2.55,
-      .48,
-      .30
-    ),
-    red
-  );
 
-  /*
-     High enough to require rolling.
-  */
+  const bar=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.55,
+        .48,
+        .30
+      ),
+      red
+    );
 
-  bar.position.y = 2.05;
+  bar.position.y=2.05;
 
   g.add(bar);
 
+
   for(let i=-2;i<=2;i++){
 
-    const stripe = new THREE.Mesh(
-      new THREE.BoxGeometry(
-        .28,.50,.32
-      ),
-      whiteMat
-    );
+    const stripe=
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          .28,
+          .50,
+          .32
+        ),
+        whiteMat
+      );
 
     stripe.position.set(
       i*.5,
@@ -1569,17 +2091,33 @@ function createHighBarrier(lane,z){
     g.add(stripe);
   }
 
-  const p1 = new THREE.Mesh(
-    new THREE.BoxGeometry(.16,2.2,.18),
-    blackMat
+
+  const p1=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .16,
+        2.2,
+        .18
+      ),
+      blackMat
+    );
+
+  p1.position.set(
+    -1.05,
+    1.1,
+    0
   );
 
-  p1.position.set(-1.05,1.1,0);
   g.add(p1);
 
-  const p2 = p1.clone();
-  p2.position.x = 1.05;
+
+  const p2=
+    p1.clone();
+
+  p2.position.x=1.05;
+
   g.add(p2);
+
 
   g.userData.type="high";
 
@@ -1590,19 +2128,24 @@ function createHighBarrier(lane,z){
   );
 
   world.add(g);
+
   obstacles.push(g);
 }
 
 
-/* alternate obstacles */
+/*
+   Wider obstacle spacing.
+*/
 
-for(let i=0;i<14;i++){
+for(let i=0;i<12;i++){
 
-  const lane =
-    Math.floor(Math.random()*3);
+  const lane=
+    Math.floor(
+      Math.random()*3
+    );
 
-  const z =
-    -25-i*27;
+  const z=
+    -30-i*34;
 
   if(i%2===0)
     createLowBarrier(lane,z);
@@ -1615,9 +2158,9 @@ for(let i=0;i<14;i++){
    COINS
 ========================================================= */
 
-const coins = [];
+const coins=[];
 
-const coinGeometry =
+const coinGeometry=
   new THREE.TorusGeometry(
     .22,
     .075,
@@ -1625,18 +2168,24 @@ const coinGeometry =
     14
   );
 
-const coinMaterial =
+const coinMaterial=
   mat(0xffc900);
 
 
-function addCoin(lane,z,y=1.05){
+function addCoin(
+  lane,
+  z,
+  y=1.05
+){
 
-  const c = new THREE.Mesh(
-    coinGeometry,
-    coinMaterial
-  );
+  const c=
+    new THREE.Mesh(
+      coinGeometry,
+      coinMaterial
+    );
 
-  c.rotation.y = Math.PI/2;
+  c.rotation.y=
+    Math.PI/2;
 
   c.position.set(
     laneX[lane],
@@ -1647,26 +2196,30 @@ function addCoin(lane,z,y=1.05){
   c.userData.collected=false;
 
   world.add(c);
+
   coins.push(c);
 }
 
 
 /*
-   Different coin patterns:
-   straight
-   curve
-   jump
+   Coin groups
 */
 
-for(let group=0;group<18;group++){
+for(
+  let group=0;
+  group<18;
+  group++
+){
 
-  const baseZ =
-    -15-group*23;
+  const baseZ=
+    -18-group*24;
 
-  const type = group%3;
-
-  const lane =
+  const type=
     group%3;
+
+  const lane=
+    group%3;
+
 
   for(let i=0;i<7;i++){
 
@@ -1674,24 +2227,25 @@ for(let group=0;group<18;group++){
 
       addCoin(
         lane,
-        baseZ-i*2.3,
+        baseZ-i*2.4,
         1.05
       );
 
     }else if(type===1){
 
-      const curveLane =
+      const curveLane=
         Math.max(
           0,
           Math.min(
             2,
-            lane + (i<3 ? -1 : 1)
+            lane+
+            (i<3 ? -1 : 1)
           )
         );
 
       addCoin(
         curveLane,
-        baseZ-i*2.3,
+        baseZ-i*2.4,
         1.1
       );
 
@@ -1699,7 +2253,7 @@ for(let group=0;group<18;group++){
 
       addCoin(
         lane,
-        baseZ-i*2.0,
+        baseZ-i*2,
         1.05+i*.32
       );
     }
@@ -1711,11 +2265,17 @@ for(let group=0;group<18;group++){
    POWERUPS
 ========================================================= */
 
-const powerups = [];
+const powerups=[];
 
-function createPowerup(type,lane,z){
 
-  const g = new THREE.Group();
+function createPowerup(
+  type,
+  lane,
+  z
+){
+
+  const g=
+    new THREE.Group();
 
   let color;
 
@@ -1732,33 +2292,35 @@ function createPowerup(type,lane,z){
     color=0x9d50ff;
 
 
-  const core = new THREE.Mesh(
-    new THREE.OctahedronGeometry(
-      .48,
-      1
-    ),
-    mat(color)
-  );
+  const core=
+    new THREE.Mesh(
+      new THREE.OctahedronGeometry(
+        .48,
+        1
+      ),
+      mat(color)
+    );
 
-  core.position.y = 1.3;
+  core.position.y=1.3;
 
   g.add(core);
 
 
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(
-      .63,
-      .055,
-      8,
-      18
-    ),
-    whiteMat
-  );
+  const ring=
+    new THREE.Mesh(
+      new THREE.TorusGeometry(
+        .63,
+        .055,
+        8,
+        18
+      ),
+      whiteMat
+    );
 
-  ring.rotation.x =
+  ring.rotation.x=
     Math.PI/2;
 
-  ring.position.y = 1.3;
+  ring.position.y=1.3;
 
   g.add(ring);
 
@@ -1772,14 +2334,34 @@ function createPowerup(type,lane,z){
   g.userData.type=type;
 
   world.add(g);
+
   powerups.push(g);
 }
 
 
-createPowerup("magnet",0,-110);
-createPowerup("sneaker",2,-190);
-createPowerup("board",1,-275);
-createPowerup("jet",0,-350);
+createPowerup(
+  "magnet",
+  0,
+  -120
+);
+
+createPowerup(
+  "sneaker",
+  2,
+  -210
+);
+
+createPowerup(
+  "board",
+  1,
+  -300
+);
+
+createPowerup(
+  "jet",
+  0,
+  -390
+);
 
 
 /* =========================================================
@@ -1797,17 +2379,24 @@ let speed=.115;
 let maxSpeed=.42;
 
 let lane=1;
-let targetX=laneX[1];
+
+let targetX=0;
+
 let laneStartX=0;
+
 let laneTween=1;
+
 const LANE_TIME=.20;
 
 let velocityY=0;
+
 let gravity=-22;
+
 let jumpPower=9.2;
 
 let jumping=false;
 let rolling=false;
+
 let rollTimer=0;
 
 let magnetTimer=0;
@@ -1820,19 +2409,25 @@ let distance=0;
 let falling=false;
 let fallTime=0;
 
-const clock = new THREE.Clock();
+const clock=
+  new THREE.Clock();
 
 
 /* =========================================================
-   LANE MOVEMENT
+   LANE
 ========================================================= */
 
 function moveLane(dir){
 
-  if(!gameRunning || paused || gameOver)
+  if(
+    !gameRunning ||
+    paused ||
+    gameOver
+  )
     return;
 
-  const newLane =
+
+  const newLane=
     Math.max(
       0,
       Math.min(
@@ -1841,14 +2436,18 @@ function moveLane(dir){
       )
     );
 
+
   if(newLane===lane)
     return;
 
-  laneStartX=player.position.x;
+
+  laneStartX=
+    player.position.x;
 
   lane=newLane;
 
-  targetX=laneX[lane];
+  targetX=
+    laneX[lane];
 
   laneTween=0;
 }
@@ -1860,7 +2459,11 @@ function moveLane(dir){
 
 function jump(){
 
-  if(!gameRunning || paused || gameOver)
+  if(
+    !gameRunning ||
+    paused ||
+    gameOver
+  )
     return;
 
   if(jumping || rolling)
@@ -1869,22 +2472,27 @@ function jump(){
   if(jetTimer>0)
     return;
 
+
   jumping=true;
 
-  velocityY =
+  velocityY=
     sneakerTimer>0
     ? 11.5
     : jumpPower;
 
+
   /*
-     Knees tuck up.
+     Initial jump pose.
   */
 
   leftLeg.rotation.x=-1.15;
   rightLeg.rotation.x=-1.15;
 
-  leftArm.rotation.x=.7;
-  rightArm.rotation.x=-.7;
+  leftKnee.rotation.x=.35;
+  rightKnee.rotation.x=.35;
+
+  leftArm.rotation.x=.75;
+  rightArm.rotation.x=-.75;
 }
 
 
@@ -1894,41 +2502,48 @@ function jump(){
 
 function roll(){
 
-  if(!gameRunning || paused || gameOver)
+  if(
+    !gameRunning ||
+    paused ||
+    gameOver
+  )
     return;
 
   if(jumping || jetTimer>0)
     return;
 
+
   rolling=true;
+
   rollTimer=.8;
 
   character.scale.y=.52;
 
-  /*
-     Body goes low and rotates.
-  */
-
-  character.rotation.z=.10;
+  character.rotation.x=.12;
 }
 
 
 /* =========================================================
-   TOUCH SWIPE
+   TOUCH
 ========================================================= */
 
 let touchX=0;
 let touchY=0;
 let touchActive=false;
 
+
 renderer.domElement.addEventListener(
   "touchstart",
   e=>{
 
-    if(!gameRunning || paused)
+    if(
+      !gameRunning ||
+      paused
+    )
       return;
 
-    const t=e.changedTouches[0];
+    const t=
+      e.changedTouches[0];
 
     touchX=t.clientX;
     touchY=t.clientY;
@@ -1941,6 +2556,7 @@ renderer.domElement.addEventListener(
   {passive:false}
 );
 
+
 renderer.domElement.addEventListener(
   "touchend",
   e=>{
@@ -1948,23 +2564,35 @@ renderer.domElement.addEventListener(
     if(!touchActive)
       return;
 
-    const t=e.changedTouches[0];
 
-    const dx=t.clientX-touchX;
-    const dy=t.clientY-touchY;
+    const t=
+      e.changedTouches[0];
+
+    const dx=
+      t.clientX-touchX;
+
+    const dy=
+      t.clientY-touchY;
 
     touchActive=false;
 
-    const ax=Math.abs(dx);
-    const ay=Math.abs(dy);
+
+    const ax=
+      Math.abs(dx);
+
+    const ay=
+      Math.abs(dy);
+
 
     /*
-       Exact requested swipe threshold:
-       50 pixels.
+       50 pixel threshold.
     */
 
-    if(Math.max(ax,ay)<50)
+    if(
+      Math.max(ax,ay)<50
+    )
       return;
+
 
     if(ax>ay){
 
@@ -1981,6 +2609,7 @@ renderer.domElement.addEventListener(
         roll();
     }
 
+
     e.preventDefault();
 
   },
@@ -1989,7 +2618,7 @@ renderer.domElement.addEventListener(
 
 
 /* =========================================================
-   OPTIONAL DESKTOP KEYBOARD
+   KEYBOARD
 ========================================================= */
 
 addEventListener(
@@ -2002,7 +2631,10 @@ addEventListener(
     if(e.key==="ArrowRight")
       moveLane(1);
 
-    if(e.key==="ArrowUp" || e.key===" ")
+    if(
+      e.key==="ArrowUp" ||
+      e.key===" "
+    )
       jump();
 
     if(e.key==="ArrowDown")
@@ -2010,7 +2642,6 @@ addEventListener(
 
     if(e.key==="p")
       togglePause();
-
   }
 );
 
@@ -2021,20 +2652,29 @@ addEventListener(
 
 function togglePause(){
 
-  if(!gameRunning || gameOver)
+  if(
+    !gameRunning ||
+    gameOver
+  )
     return;
+
 
   paused=!paused;
 
-  document.getElementById("pause").textContent =
-    paused ? "▶" : "Ⅱ";
+  document.getElementById(
+    "pause"
+  ).textContent=
+    paused
+    ? "▶"
+    : "Ⅱ";
 }
 
+
 document.getElementById("pause")
-  .addEventListener(
-    "click",
-    togglePause
-  );
+.addEventListener(
+  "click",
+  togglePause
+);
 
 
 /* =========================================================
@@ -2047,12 +2687,17 @@ function resetGame(){
   coinCount=0;
 
   speed=.115;
+
   distance=0;
 
   lane=1;
+
   targetX=0;
+
   player.position.set(
-    0,0,6
+    0,
+    0,
+    5
   );
 
   velocityY=0;
@@ -2066,73 +2711,99 @@ function resetGame(){
   jetTimer=0;
 
   gameOver=false;
+
   falling=false;
+
   fallTime=0;
 
   paused=false;
 
   character.scale.set(
-    1,1,1
+    .88,
+    .88,
+    .88
   );
 
   character.rotation.set(
-    0,0,0
+    0,
+    0,
+    0
   );
+
+  character.position.y=0;
 
   board.visible=false;
   jetpack.visible=false;
 
-  document.getElementById("pause")
-    .textContent="Ⅱ";
+
+  document.getElementById(
+    "pause"
+  ).textContent="Ⅱ";
 
 
-  /* reset trains */
+  /*
+     Reset trains
+  */
 
-  trains.forEach((train,i)=>{
+  trains.forEach(
+    (train,i)=>{
 
-    train.position.z =
-      -42-i*42;
+      train.position.z=
+        -55-i*52;
 
-    train.position.x =
-      laneX[
-        Math.floor(
-          Math.random()*3
-        )
-      ];
-  });
-
-
-  /* reset obstacles */
-
-  obstacles.forEach((o,i)=>{
-
-    o.position.z =
-      -25-i*27;
-
-    o.position.x =
-      laneX[
-        Math.floor(
-          Math.random()*3
-        )
-      ];
-  });
+      train.position.x=
+        laneX[
+          Math.floor(
+            Math.random()*3
+          )
+        ];
+    }
+  );
 
 
-  /* reset coins */
+  /*
+     Reset obstacles
+  */
 
-  coins.forEach((c,i)=>{
+  obstacles.forEach(
+    (o,i)=>{
 
-    c.visible=true;
-    c.userData.collected=false;
-  });
+      o.position.z=
+        -30-i*34;
+
+      o.position.x=
+        laneX[
+          Math.floor(
+            Math.random()*3
+          )
+        ];
+    }
+  );
 
 
-  /* reset powerups */
+  /*
+     Reset coins
+  */
 
-  powerups.forEach((p,i)=>{
+  coins.forEach(
+    c=>{
 
-    p.visible=true;
-  });
+      c.visible=true;
+
+      c.userData.collected=false;
+    }
+  );
+
+
+  /*
+     Reset powerups
+  */
+
+  powerups.forEach(
+    p=>{
+      p.visible=true;
+    }
+  );
 
 
   updateHUD();
@@ -2149,13 +2820,18 @@ function startGame(){
 
   gameRunning=true;
 
-  document.getElementById("startScreen")
-    .classList.add("hidden");
+  document.getElementById(
+    "startScreen"
+  ).classList.add("hidden");
 
-  document.getElementById("gameOver")
-    .classList.add("hidden");
+  document.getElementById(
+    "gameOver"
+  ).classList.add("hidden");
 
-  showMessage("GO!",700);
+  showMessage(
+    "GO!",
+    700
+  );
 }
 
 
@@ -2168,19 +2844,21 @@ function endGame(){
   if(gameOver)
     return;
 
+
   gameOver=true;
+
   gameRunning=false;
 
   falling=true;
+
   fallTime=0;
 
   velocityY=3;
 
-  /*
-     Fall forward.
-  */
-
-  showMessage("GAME OVER",1000);
+  showMessage(
+    "GAME OVER",
+    1000
+  );
 }
 
 
@@ -2190,24 +2868,37 @@ function endGame(){
 
 let messageTimer=null;
 
-function showMessage(text,duration=700){
+
+function showMessage(
+  text,
+  duration=700
+){
 
   const el=
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
 
   el.textContent=text;
+
   el.style.opacity="1";
 
-  clearTimeout(messageTimer);
+  clearTimeout(
+    messageTimer
+  );
 
-  messageTimer=setTimeout(()=>{
-    el.style.opacity="0";
-  },duration);
+  messageTimer=
+    setTimeout(
+      ()=>{
+        el.style.opacity="0";
+      },
+      duration
+    );
 }
 
 
 /* =========================================================
-   POWERUP ACTIVATION
+   POWER
 ========================================================= */
 
 function activatePower(type){
@@ -2221,20 +2912,31 @@ function activatePower(type){
   if(type==="board"){
 
     boardTimer=12;
+
     board.visible=true;
   }
 
   if(type==="jet"){
 
     jetTimer=8;
+
     jetpack.visible=true;
   }
 
+
   showMessage(
-    type==="magnet" ? "🧲 MAGNET!" :
-    type==="sneaker" ? "👟 SUPER SNEAKERS!" :
-    type==="board" ? "🛹 HOVERBOARD!" :
-    "🚀 JETPACK!",
+
+    type==="magnet"
+    ? "🧲 MAGNET!"
+
+    : type==="sneaker"
+    ? "👟 SUPER SNEAKERS!"
+
+    : type==="board"
+    ? "🛹 HOVERBOARD!"
+
+    : "🚀 JETPACK!",
+
     900
   );
 }
@@ -2246,13 +2948,17 @@ function activatePower(type){
 
 function updateHUD(){
 
-  document.getElementById("score")
-    .textContent=
+  document.getElementById(
+    "score"
+  ).textContent=
     Math.floor(score);
 
-  document.getElementById("coins")
-    .textContent=
+
+  document.getElementById(
+    "coins"
+  ).textContent=
     coinCount;
+
 
   updatePower(
     "magnetPower",
@@ -2275,17 +2981,23 @@ function updateHUD(){
   );
 }
 
-function updatePower(id,time){
+
+function updatePower(
+  id,
+  time
+){
 
   const el=
     document.getElementById(id);
+
 
   if(time>0){
 
     el.style.display="block";
 
-    el.querySelector("span")
-      .textContent=
+    el.querySelector(
+      "span"
+    ).textContent=
       Math.ceil(time);
 
   }else{
@@ -2296,30 +3008,30 @@ function updatePower(id,time){
 
 
 /* =========================================================
-   PLAYER PHYSICS
+   PLAYER
 ========================================================= */
 
 function updatePlayer(dt){
 
   /*
-     Smooth 0.2 second lane tween.
+     Smooth lane movement.
   */
 
   if(laneTween<1){
 
-    laneTween += dt/LANE_TIME;
+    laneTween+=
+      dt/LANE_TIME;
 
     const t=
-      Math.min(1,laneTween);
-
-    /*
-       smoothstep
-    */
+      Math.min(
+        1,
+        laneTween
+      );
 
     const eased=
       t*t*(3-2*t);
 
-    player.position.x =
+    player.position.x=
       THREE.MathUtils.lerp(
         laneStartX,
         targetX,
@@ -2328,92 +3040,147 @@ function updatePlayer(dt){
 
   }else{
 
-    player.position.x=targetX;
+    player.position.x=
+      targetX;
   }
 
 
-  /* jetpack */
+  /* =======================================================
+     JETPACK
+  ======================================================= */
 
   if(jetTimer>0){
 
-    player.position.y =
-      3.7+
+    player.position.y=
+      3.8+
       Math.sin(
         performance.now()*.008
       )*.18;
 
     velocityY=0;
+
     jumping=false;
 
     jetpack.visible=true;
+
 
   }else{
 
     jetpack.visible=false;
 
+
+    /* =====================================================
+       JUMP PHYSICS
+    ===================================================== */
+
     if(jumping){
 
-      velocityY +=
+      velocityY+=
         gravity*dt;
 
-      player.position.y +=
+      player.position.y+=
         velocityY*dt;
 
+
       /*
-         tuck legs during jump
+         Air running pose / tuck.
       */
 
-      leftLeg.rotation.x=-.75;
-      rightLeg.rotation.x=-.75;
+      const air=
+        Math.min(
+          1,
+          player.position.y/2
+        );
 
-      leftArm.rotation.x=.45;
-      rightArm.rotation.x=-.45;
+
+      leftLeg.rotation.x=
+        -1.0+.20*air;
+
+      rightLeg.rotation.x=
+        -1.0+.20*air;
+
+      leftKnee.rotation.x=.5;
+      rightKnee.rotation.x=.5;
+
+      leftArm.rotation.x=.65;
+      rightArm.rotation.x=-.65;
 
 
-      if(player.position.y<=0){
+      if(
+        player.position.y<=0
+      ){
 
         player.position.y=0;
 
         velocityY=0;
+
         jumping=false;
       }
     }
   }
 
 
-  /* rolling */
+  /* =======================================================
+     ROLL
+  ======================================================= */
 
   if(rolling){
 
     rollTimer-=dt;
 
-    character.scale.y =
+    character.scale.y=
       .52+
       Math.sin(
         (0.8-rollTimer)*20
       )*.025;
 
-    character.rotation.z =
+    character.rotation.x=
+      .10+
+      Math.sin(
+        (0.8-rollTimer)*15
+      )*.12;
+
+    character.rotation.z=
       Math.sin(
         (0.8-rollTimer)*16
-      )*.25;
+      )*.22;
+
+
+    /*
+       Roll pose.
+    */
+
+    leftLeg.rotation.x=-.45;
+    rightLeg.rotation.x=-.45;
+
+    leftKnee.rotation.x=.75;
+    rightKnee.rotation.x=.75;
+
+    leftArm.rotation.x=.85;
+    rightArm.rotation.x=.85;
+
 
     if(rollTimer<=0){
 
       rolling=false;
 
-      character.scale.y=1;
+      character.scale.y=.88;
+
+      character.rotation.x=0;
       character.rotation.z=0;
     }
   }
 
 
-  /*
-     If not jumping/rolling,
-     normal run animation is active.
-  */
+  /* =======================================================
+     NORMAL RUN
+  ======================================================= */
 
-  if(!jumping && !rolling && jetTimer<=0){
+  if(
+    !jumping &&
+    !rolling &&
+    jetTimer<=0
+  ){
 
     updateRunningAnimation(dt);
   }
@@ -2421,32 +3188,36 @@ function updatePlayer(dt){
 
 
 /* =========================================================
-   MOVE WORLD
+   WORLD MOVEMENT
 ========================================================= */
 
 function updateWorld(dt){
 
-  const moveSpeed =
+  const moveSpeed=
     speed*60*dt;
 
 
-  [...trains,...obstacles].forEach(
+  /*
+     Trains + obstacles
+  */
+
+  [...trains,...obstacles]
+  .forEach(
     obj=>{
 
-      obj.position.z += moveSpeed;
+      obj.position.z+=
+        moveSpeed;
 
-      /*
-         When object passes camera,
-         recycle it far ahead.
-      */
 
-      if(obj.position.z>18){
+      if(
+        obj.position.z>22
+      ){
 
-        obj.position.z =
+        obj.position.z=
           -250-
-          Math.random()*100;
+          Math.random()*120;
 
-        obj.position.x =
+        obj.position.x=
           laneX[
             Math.floor(
               Math.random()*3
@@ -2457,88 +3228,101 @@ function updateWorld(dt){
   );
 
 
-  /* coins */
+  /*
+     Coins
+  */
 
-  coins.forEach(c=>{
+  coins.forEach(
+    c=>{
 
-    if(c.userData.collected)
-      return;
-
-    c.position.z += moveSpeed;
-
-    c.rotation.y += dt*7;
-
-    c.rotation.x =
-      Math.sin(
-        performance.now()*.004
-      )*.15;
+      if(
+        c.userData.collected
+      )
+        return;
 
 
-    if(c.position.z>20){
+      c.position.z+=
+        moveSpeed;
 
-      c.position.z =
-        -250-
-        Math.random()*110;
+      c.rotation.y+=
+        dt*7;
 
-      c.position.x =
-        laneX[
-          Math.floor(
-            Math.random()*3
-          )
-        ];
+      c.rotation.x=
+        Math.sin(
+          performance.now()*.004
+        )*.15;
 
-      /*
-         Some coins are raised.
-      */
 
-      c.position.y =
-        Math.random()>.75
-        ? 2.0
-        : 1.05;
+      if(
+        c.position.z>22
+      ){
 
-      c.visible=true;
-      c.userData.collected=false;
+        c.position.z=
+          -260-
+          Math.random()*120;
+
+        c.position.x=
+          laneX[
+            Math.floor(
+              Math.random()*3
+            )
+          ];
+
+        c.position.y=
+          Math.random()>.75
+          ? 2
+          : 1.05;
+
+        c.visible=true;
+
+        c.userData.collected=false;
+      }
     }
-  });
-
-
-  /* powerups */
-
-  powerups.forEach(p=>{
-
-    p.position.z += moveSpeed;
-
-    p.rotation.y += dt*2;
-
-    if(p.position.z>20){
-
-      p.position.z =
-        -180-
-        Math.random()*150;
-
-      p.position.x =
-        laneX[
-          Math.floor(
-            Math.random()*3
-          )
-        ];
-
-      p.visible=true;
-    }
-  });
-
-
-  distance += moveSpeed;
-
-  score +=
-    moveSpeed*8;
+  );
 
 
   /*
-     Slowly increase speed.
+     Powerups
   */
 
-  speed +=
+  powerups.forEach(
+    p=>{
+
+      p.position.z+=
+        moveSpeed;
+
+      p.rotation.y+=
+        dt*2;
+
+
+      if(
+        p.position.z>22
+      ){
+
+        p.position.z=
+          -200-
+          Math.random()*150;
+
+        p.position.x=
+          laneX[
+            Math.floor(
+              Math.random()*3
+            )
+          ];
+
+        p.visible=true;
+      }
+    }
+  );
+
+
+  distance+=moveSpeed;
+
+  score+=
+    moveSpeed*8;
+
+
+  speed+=
     dt*.003;
 
   speed=
@@ -2550,54 +3334,63 @@ function updateWorld(dt){
 
 
 /* =========================================================
-   COIN COLLISION
+   COINS
 ========================================================= */
 
 function collectCoins(){
 
-  const px=player.position.x;
-  const py=player.position.y;
-  const pz=player.position.z;
+  const px=
+    player.position.x;
 
-  coins.forEach(c=>{
+  const py=
+    player.position.y;
 
-    if(c.userData.collected)
-      return;
-
-    let dx =
-      c.position.x-px;
-
-    let dy =
-      c.position.y-(py+1.1);
-
-    let dz =
-      c.position.z-pz;
+  const pz=
+    player.position.z;
 
 
-    /*
-       Magnet increases collection radius.
-    */
+  coins.forEach(
+    c=>{
 
-    const radius =
-      magnetTimer>0
-      ? 3.2
-      : .85;
+      if(
+        c.userData.collected
+      )
+        return;
 
 
-    if(
-      Math.abs(dx)<radius &&
-      Math.abs(dy)<1.4 &&
-      Math.abs(dz)<1.25
-    ){
+      const dx=
+        c.position.x-px;
 
-      c.userData.collected=true;
-      c.visible=false;
+      const dy=
+        c.position.y-
+        (py+1.1);
 
-      coinCount++;
+      const dz=
+        c.position.z-pz;
 
-      score+=10;
+
+      const radius=
+        magnetTimer>0
+        ? 3.2
+        : .85;
+
+
+      if(
+        Math.abs(dx)<radius &&
+        Math.abs(dy)<1.4 &&
+        Math.abs(dz)<1.25
+      ){
+
+        c.userData.collected=true;
+
+        c.visible=false;
+
+        coinCount++;
+
+        score+=10;
+      }
     }
-  });
+  );
 }
 
 
@@ -2607,34 +3400,40 @@ function collectCoins(){
 
 function collectPowerups(){
 
-  powerups.forEach(p=>{
+  powerups.forEach(
+    p=>{
 
-    if(!p.visible)
-      return;
+      if(!p.visible)
+        return;
 
-    const dx =
-      p.position.x-player.position.x;
 
-    const dy =
-      p.position.y-
-      (player.position.y+1);
+      const dx=
+        p.position.x-
+        player.position.x;
 
-    const dz =
-      p.position.z-player.position.z;
+      const dy=
+        p.position.y-
+        (player.position.y+1);
 
-    if(
-      Math.abs(dx)<1.2 &&
-      Math.abs(dy)<1.8 &&
-      Math.abs(dz)<1.4
-    ){
+      const dz=
+        p.position.z-
+        player.position.z;
 
-      p.visible=false;
 
-      activatePower(
-        p.userData.type
-      );
+      if(
+        Math.abs(dx)<1.2 &&
+        Math.abs(dy)<1.8 &&
+        Math.abs(dz)<1.4
+      ){
+
+        p.visible=false;
+
+        activatePower(
+          p.userData.type
+        );
+      }
     }
-  });
+  );
 }
 
 
@@ -2644,47 +3443,44 @@ function collectPowerups(){
 
 function trainCollision(){
 
-  /*
-     Jetpack means player is flying
-     above trains.
-  */
-
   if(jetTimer>0)
     return false;
 
 
-  for(const train of trains){
+  for(
+    const train of trains
+  ){
 
-    const dx =
+    const dx=
       Math.abs(
         train.position.x-
         player.position.x
       );
 
-    const dz =
+    const dz=
       Math.abs(
         train.position.z-
         player.position.z
       );
 
+
     /*
-       Train is intentionally wide
-       and long.
+       Train is wide and long.
     */
 
     if(
-      dx<1.48 &&
-      dz<4.15
+      dx<1.22 &&
+      dz<4.8
     ){
 
       /*
-         Hoverboard can save the player
-         once from a train collision.
+         Board saves one hit.
       */
 
       if(boardTimer>0){
 
         boardTimer=0;
+
         board.visible=false;
 
         train.position.z-=2.5;
@@ -2697,9 +3493,24 @@ function trainCollision(){
         return false;
       }
 
+
+      /*
+         Jumping high enough avoids train.
+      */
+
+      if(
+        jumping &&
+        player.position.y>1.8
+      ){
+
+        continue;
+      }
+
+
       return true;
     }
   }
+
 
   return false;
 }
@@ -2711,38 +3522,42 @@ function trainCollision(){
 
 function obstacleCollision(){
 
-  for(const o of obstacles){
+  for(
+    const o of obstacles
+  ){
 
-    const dx =
+    const dx=
       Math.abs(
         o.position.x-
         player.position.x
       );
 
-    const dz =
+    const dz=
       Math.abs(
         o.position.z-
         player.position.z
       );
+
 
     if(
       dx<1.30 &&
       dz<1.15
     ){
 
-      if(o.userData.type==="low"){
-
-        /*
-           Low barrier needs jump.
-        */
+      if(
+        o.userData.type==="low"
+      ){
 
         if(
           player.position.y<1.05
         ){
 
-          if(boardTimer>0){
+          if(
+            boardTimer>0
+          ){
 
             boardTimer=0;
+
             board.visible=false;
 
             showMessage(
@@ -2758,15 +3573,14 @@ function obstacleCollision(){
 
       }else{
 
-        /*
-           High barrier needs roll.
-        */
-
         if(!rolling){
 
-          if(boardTimer>0){
+          if(
+            boardTimer>0
+          ){
 
             boardTimer=0;
+
             board.visible=false;
 
             showMessage(
@@ -2782,6 +3596,7 @@ function obstacleCollision(){
       }
     }
   }
+
 
   return false;
 }
@@ -2817,26 +3632,20 @@ function updatePowerTimers(dt){
       jetTimer-dt
     );
 
+
   board.visible=
     boardTimer>0;
 
-  if(
-    jetTimer<=0
-  ){
+  jetpack.visible=
+    jetTimer>0;
 
-    jetpack.visible=false;
-
-  }else{
-
-    jetpack.visible=true;
-  }
 
   updateHUD();
 }
 
 
 /* =========================================================
-   FALL ANIMATION
+   FALL
 ========================================================= */
 
 function updateFall(dt){
@@ -2844,78 +3653,123 @@ function updateFall(dt){
   if(!falling)
     return;
 
+
   fallTime+=dt;
 
-  player.position.y +=
+
+  player.position.y+=
     velocityY*dt;
 
   velocityY+=
     gravity*dt;
 
-  character.rotation.x +=
+
+  /*
+     Character falls forward.
+  */
+
+  character.rotation.x+=
     dt*4.2;
 
-  character.rotation.z +=
+  character.rotation.z+=
     dt*1.3;
 
 
-  if(fallTime>.75){
+  if(
+    fallTime>.75
+  ){
 
     falling=false;
+
 
     document.getElementById(
       "finalScore"
     ).textContent=
       Math.floor(score);
 
+
     document.getElementById(
       "finalCoins"
     ).textContent=
       coinCount;
 
+
     document.getElementById(
       "gameOver"
-    ).classList.remove("hidden");
+    ).classList.remove(
+      "hidden"
+    );
   }
 }
 
 
 /* =========================================================
    CAMERA
+   THIS IS THE MAIN FIX
 ========================================================= */
 
 function updateCamera(dt){
 
   /*
-     Camera follows lane smoothly.
+     Camera follows the lane,
+     but does NOT get close to player.
   */
 
-  const desiredX =
-    player.position.x*.30;
+  const desiredX=
+    player.position.x*.22;
 
-  camera.position.x +=
-    (desiredX-camera.position.x)*
-    Math.min(1,dt*6);
+
+  camera.position.x+=
+    (
+      desiredX-
+      camera.position.x
+    )*
+    Math.min(
+      1,
+      dt*5
+    );
 
 
   /*
-     Slight vertical movement.
+     Camera stays high enough
+     to see complete character.
   */
 
-  const desiredY =
-    4.75+
-    player.position.y*.12;
+  const desiredY=
+    4.15+
+    player.position.y*.10;
 
-  camera.position.y +=
-    (desiredY-camera.position.y)*
-    Math.min(1,dt*5);
 
+  camera.position.y+=
+    (
+      desiredY-
+      camera.position.y
+    )*
+    Math.min(
+      1,
+      dt*5
+    );
+
+
+  /*
+     Keep camera far behind.
+  */
+
+  camera.position.z=
+    15.5;
+
+
+  /*
+     Look farther ahead on track.
+     This gives Subway-Surfers-style
+     road visibility.
+  */
 
   camera.lookAt(
-    player.position.x*.18,
+    player.position.x*.12,
     1.55+
-    player.position.y*.15,
-    -15
+    player.position.y*.12,
+    -17
   );
 }
 
@@ -2926,14 +3780,19 @@ function updateCamera(dt){
 
 function animate(){
 
-  requestAnimationFrame(animate);
+  requestAnimationFrame(
+    animate
+  );
 
-  const dt =
+
+  const dt=
     Math.min(
       clock.getDelta(),
       .033
     );
 
+
+  /* GAME OVER */
 
   if(gameOver){
 
@@ -2950,16 +3809,13 @@ function animate(){
   }
 
 
-  if(!gameRunning){
+  /* START SCREEN */
 
-    /*
-       Idle breathing animation
-       on start screen.
-    */
+  if(!gameRunning){
 
     runTime+=dt*2;
 
-    character.position.y =
+    character.position.y=
       Math.sin(runTime)*.025;
 
     renderer.render(
@@ -2971,6 +3827,8 @@ function animate(){
   }
 
 
+  /* PAUSE */
+
   if(paused){
 
     renderer.render(
@@ -2981,6 +3839,8 @@ function animate(){
     return;
   }
 
+
+  /* GAME */
 
   updatePlayer(dt);
 
@@ -2994,10 +3854,6 @@ function animate(){
 
   updateCamera(dt);
 
-
-  /*
-     Collision after movement.
-  */
 
   if(
     trainCollision() ||
@@ -3019,17 +3875,22 @@ function animate(){
    BUTTONS
 ========================================================= */
 
-document.getElementById("startBtn")
-  .addEventListener(
-    "click",
-    startGame
-  );
+document.getElementById(
+  "startBtn"
+)
+.addEventListener(
+  "click",
+  startGame
+);
 
-document.getElementById("restartBtn")
-  .addEventListener(
-    "click",
-    startGame
-  );
+
+document.getElementById(
+  "restartBtn"
+)
+.addEventListener(
+  "click",
+  startGame
+);
 
 
 /* =========================================================
@@ -3040,8 +3901,9 @@ addEventListener(
   "resize",
   ()=>{
 
-    camera.aspect =
-      innerWidth/innerHeight;
+    camera.aspect=
+      innerWidth/
+      innerHeight;
 
     camera.updateProjectionMatrix();
 
@@ -3057,13 +3919,16 @@ addEventListener(
    START
 ========================================================= */
 
-document.getElementById("loading")
-  .style.display="none";
+document.getElementById(
+  "loading"
+).style.display="none";
+
 
 resetGame();
 
 animate();
 
 </script>
+
 </body>
 </html>
